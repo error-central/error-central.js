@@ -8,10 +8,10 @@ new function () {
 	var popup;
 	var options;
 	var isIFrame = window.top != window;
-	const useCache = false; // true;
-	const doSo = false;
-	const doGithub = true;
-	const doEc = true;
+	var useCache = false; // true;
+	var doSo = false;
+	var doGithub = true;
+	var doEc = true;
 	// E.g. "error-central/javascript-errors-notifier"
 	const repo = window.localStorage.getItem('repo') || "error-central/javascript-errors-notifier";
 

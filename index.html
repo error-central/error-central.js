@@ -6,19 +6,21 @@
 
 <body>
 
-	1. Establish that you (even) have control. Print statements, alerts, blinky lights, fake data rows, whatever.
+	<h1>Demo of Error Central for javascript</h1>
 
-	<form onsubmit="return false;">
-		<textarea id="ta">
-
-				</textarea>
-		<button onclick="eval(document.getElementById('ta').value); return false;">Execute</button>
-
-	</form>
+	<p>Buttons on this page produce errors. Open the browser console Command-Option-J to view console.</p>
 
 	<button onclick="x=undefinedFunction(4)"><code>undefinedFunction(4)</code></button>
 
 	<button onclick="x=undefinedFunctionNoIssue(4)"><code>undefinedFunctionNoIssue()</code></button>
+
+	<form onsubmit="return false;">
+		<textarea id="ta" style="font-family: monospace;">
+			randomFunction();
+		</textarea>
+		<button onclick="eval(document.getElementById('ta').value); return false;">Execute</button>
+	</form>
+
 
 	<script>
 
