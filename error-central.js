@@ -8,12 +8,14 @@ var icon;
 var popup;
 var options;
 var isIFrame = window.top != window;
-var useCache = false; // true;
-var doSo = false;
+
+// Settings
+var useCache = true;
+var doSo = true;
 var doGithub = true;
 var doEc = true;
 // E.g. "error-central/javascript-errors-notifier"
-const repo = window.localStorage.getItem('repo') || "error-central/javascript-errors-notifier";
+var repo = window.localStorage.getItem('repo') || "error-central/javascript-errors-notifier";
 
 function showPopup(popupUrl) {
 
