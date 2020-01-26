@@ -294,7 +294,6 @@ new function () {
 		const error = e.detail;
 
 		// Stan - EC
-		console.info(`Error was caught: ${error.text} `);
 		const soP = searchSo(error);
 		const githubP = searchGithub(error);
 		const ecP = searchEc(error);
