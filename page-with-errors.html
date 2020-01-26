@@ -1,0 +1,50 @@
+<html>
+
+<head>
+	<script src="./ec2.js?x" charset="utf-8"></script>
+</head>
+
+<body>
+
+	1. Establish that you (even) have control. Print statements, alerts, blinky lights, fake data rows, whatever.
+
+	<form onsubmit="return false;">
+		<textarea id="ta">
+
+				</textarea>
+		<button onclick="eval(document.getElementById('ta').value); return false;">Execute</button>
+
+	</form>
+
+	<button onclick="x=undefinedFunction(4)"><code>undefinedFunction(4)</code></button>
+
+	<button onclick="x=undefinedFunctionNoIssue(4)"><code>undefinedFunctionNoIssue()</code></button>
+
+	<script>
+
+		// window.onerror = function (message, source, lineno, colno, error) {
+		// 	console.info(">>>" + message, source, lineno)
+		// }
+
+		// console.log("Hi");
+
+		// console.error("User generated error.");
+
+				// fart()
+				// setTimeout("fart", 1000);
+
+
+				// let req = new XMLHttpRequest();
+				// let dependencies;
+				// req.open('GET', 'https://google.com/someapi');
+		// req.onload = () => {
+		// 	console.log("We wont' get here.")
+		// };
+		// req.send();
+
+
+	</script>
+
+</body>
+
+</html>
