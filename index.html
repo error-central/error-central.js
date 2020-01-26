@@ -2,6 +2,21 @@
 
 <head>
 	<script src="./error-central.js" charset="utf-8"></script>
+
+	<script>
+		function evalForError() {
+			try {
+				eval(document.getElementById('ta').value);
+			}
+			catch (e) {
+				// console.log(e)
+				var error = new ErrorEvent('Eval event', e);
+				// NOT WORKING. :(
+				window.dispatchEvent(error);
+			};
+			return false;
+		}
+	</script>
 </head>
 
 <body>
@@ -18,31 +33,33 @@
 		<textarea id="ta" style="font-family: monospace;">
 			randomFunction();
 		</textarea>
-		<button onclick="eval(document.getElementById('ta').value); return false;">Execute</button>
+		<!-- <button onclick="eval(document.getElementById('ta').value); return false;">Execute</button> -->
+		<!-- <button onclick="window['eval'].call(window, document.getElementById('ta').value); return false;">Execute</button> -->
+
+		<button onclick="return evalForError()">Execute</button>
+
 	</form>
-
-
 	<script>
 
-		// window.onerror = function (message, source, lineno, colno, error) {
-		// 	console.info(">>>" + message, source, lineno)
-		// }
+			// window.onerror = function (message, source, lineno, colno, error) {
+			// console.info(">>>" + message, source, lineno)
+			// }
 
-		// console.log("Hi");
+			// console.log("Hi");
 
-		// console.error("User generated error.");
+			// console.error("User generated error.");
 
-				// fart()
-				// setTimeout("fart", 1000);
+			// fart()
+			// setTimeout("fart", 1000);
 
 
-				// let req = new XMLHttpRequest();
-				// let dependencies;
-				// req.open('GET', 'https://google.com/someapi');
-		// req.onload = () => {
-		// 	console.log("We wont' get here.")
-		// };
-		// req.send();
+			// let req = new XMLHttpRequest();
+			// let dependencies;
+			// req.open('GET', 'https://google.com/someapi');
+			// req.onload = () => {
+			// console.log("We wont' get here.")
+			// };
+			// req.send();
 
 
 	</script>

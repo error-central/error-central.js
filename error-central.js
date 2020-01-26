@@ -180,15 +180,20 @@ function searchEc(error) {
 }
 
 
-const soHandler = (r) => {
-	if (!r) {
+const soHandler = (r, error) => {
+	try {
+		soResponse = JSON.parse(r);
+	}
+	catch (e) {
+		console.log("Internal EC error: Could not parse response from Stack Exchange");
 		return;
 	}
-	else if (r.error_id == 502) {
-		console.error("EC internal error: too many requests to stack overfow", error);
-	};
-	soResponse = JSON.parse(r);
-	if (soResponse.items.length == 0) {
+	if (soResponse.error_id == 502) {
+		console.log("EC internal error: too many requests to stack overfow.\nSetting `doEc=false` to disable.", soResponse);
+		doSo = false;
+		return;
+	}
+	else if (soResponse.items.length == 0) {
 		return;
 	}
 	// Format SO
@@ -304,7 +309,7 @@ document.addEventListener('ErrorToExtension', function (e) {
 		console.groupCollapsed(
 			`%c${error.text} 🐛Error Central insights`,
 			'color: #fc212e; background-color: #fff0f0');
-		soHandler(soR);
+		soHandler(soR, error);
 		githubHandler(githubR, error);
 		ecHandler(ecR);
 		console.groupEnd();
