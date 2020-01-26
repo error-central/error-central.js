@@ -95,7 +95,7 @@ function searchSo(error) {
 		if (!doSo) {
 			return resolve("");
 		}
-		let r = window.localStorage.getItem(`so:${error.text}`);
+		let r = window.sessionStorage.getItem(`so:${error.text}`);
 		if (r && useCache) {
 			// Cache hit
 			// console.info('SO cache hit')
@@ -107,7 +107,7 @@ function searchSo(error) {
 			let soReq = new XMLHttpRequest();
 			soReq.open('GET', soQueryUrl);
 			soReq.onload = () => {
-				window.localStorage.setItem( // Cache
+				window.sessionStorage.setItem( // Cache
 					`so:${error.text}`, soReq.responseText);
 				resolve(soReq.responseText);
 			};
@@ -126,7 +126,7 @@ function searchGithub(error) {
 		if (!doGithub) {
 			resolve(""); // Hacky way to indicate we turned off this search
 		}
-		let r = window.localStorage.getItem(`github:${error.text}`);
+		let r = window.sessionStorage.getItem(`github:${error.text}`);
 		if (r && useCache) {
 			// Cache hit
 			// console.info('github cache hit')
@@ -138,7 +138,7 @@ function searchGithub(error) {
 			let githubReq = new XMLHttpRequest();
 			githubReq.open('GET', githubQueryUrl);
 			githubReq.onload = () => {
-				window.localStorage.setItem( // Cache
+				window.sessionStorage.setItem( // Cache
 					`github:${error.text}`,
 					githubReq.responseText);
 				resolve(githubReq.responseText);
@@ -157,7 +157,7 @@ function searchEc(error) {
 		if (!doEc) {
 			resolve("");
 		}
-		let r = window.localStorage.getItem(`ec:${error.text}`);
+		let r = window.sessionStorage.getItem(`ec:${error.text}`);
 		if (false && r && useCache) {
 			// Cache hit
 			console.info('ec cache hit');
@@ -169,7 +169,7 @@ function searchEc(error) {
 			let ecReq = new XMLHttpRequest();
 			ecReq.open('GET', ecQueryUrl);
 			ecReq.onload = () => {
-				window.localStorage.setItem( // Cache
+				window.sessionStorage.setItem( // Cache
 					`ec:${error.text}`,
 					ecReq.responseText);
 				resolve(ecReq.responseText);
@@ -181,6 +181,7 @@ function searchEc(error) {
 
 
 const soHandler = (r, error) => {
+	if (!r) return; // Turned off
 	try {
 		soResponse = JSON.parse(r);
 	}
@@ -189,8 +190,9 @@ const soHandler = (r, error) => {
 		return;
 	}
 	if (soResponse.error_id == 502) {
-		console.log("EC internal error: too many requests to stack overfow.\nSetting `doEc=false` to disable.", soResponse);
-		doSo = false;
+		window.sessionStorage.removeItem(`so:${error.text}`); // Don't cache errors
+		console.log("EC internal error: too many requests to stack overfow.\nSetting `window.doSo=false` to disable.\n", soResponse);
+		window.doSo = false;
 		return;
 	}
 	else if (soResponse.items.length == 0) {
