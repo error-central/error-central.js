@@ -17,54 +17,102 @@ var doEc = true;
 // E.g. "error-central/javascript-errors-notifier"
 var repo = window.localStorage.getItem('repo') || "error-central/javascript-errors-notifier";
 
-function showPopup(popupUrl) {
+function genericizeError(errorText) {
+	standardErrors = [
+		[/Error: Permission denied to access property (\S+)/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Property_access_denied"],
+		[/InternalError: too much recursion/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Too_much_recursion"],
+		[/RangeError: argument is not a valid code point/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Not_a_codepoint"],
+		[/RangeError: invalid array length/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Invalid_array_length"],
+		[/RangeError: invalid date/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Invalid_date"],
+		[/RangeError: precision is out of range/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Precision_range"],
+		[/RangeError: radix must be an integer/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Bad_radix"],
+		[/RangeError: repeat count must be less than infinity/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Resulting_string_too_large"],
+		[/RangeError: repeat count must be non-negative/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Negative_repetition_count"],
+		[/ReferenceError: (\S+) is not defined/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Not_defined"],
+		[/ReferenceError: assignment to undeclared variable (\S+)/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Undeclared_var"],
+		[/ReferenceError: can't access lexical declaration`X' before initialization/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Cant_access_lexical_declaration_before_init"],
+		[/ReferenceError: deprecated caller or arguments usage/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Deprecated_caller_or_arguments_usage"],
+		[/ReferenceError: invalid assignment left-hand side/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Invalid_assignment_left-hand_side"],
+		[/ReferenceError: reference to undefined property (\S+)/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Undefined_prop"],
+		[/SyntaxError: \"0\"-prefixed octal literals and octal escape seq. are deprecated/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Deprecated_octal"],
+		[/SyntaxError: \"use strict\" not allowed in function with non-simple parameters/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Strict_Non_Simple_Params"],
+		[/SyntaxError: (\S+) is a reserved identifier/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Reserved_identifier"],
+		[/SyntaxError: JSON.parse: bad parsing/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/JSON_bad_parse"],
+		[/SyntaxError: Malformed formal parameter/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Malformed_formal_parameter"],
+		[/SyntaxError: Unexpected token/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Unexpected_token"],
+		[/SyntaxError: Using \/\/@ to indicate sourceURL pragmas is deprecated. Use \/\/# instead/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Deprecated_source_map_pragma"],
+		[/SyntaxError: a declaration in the head of a for-of loop can't have an initializer/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Invalid_for-of_initializer"],
+		[/SyntaxError: applying the 'delete' operator to an unqualified name is deprecated/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Delete_in_strict_mode"],
+		[/SyntaxError: for-in loop head declarations may not have initializers/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Invalid_for-in_initializer"],
+		[/SyntaxError: function statement requires a name/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Unnamed_function_statement"],
+		[/SyntaxError: identifier starts immediately after numeric literal/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Identifier_after_number"],
+		[/SyntaxError: illegal character/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Illegal_character"],
+		[/SyntaxError: invalid regular expression flag (\S+)/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Bad_regexp_flag"],
+		[/SyntaxError: missing \) after argument list/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Missing_parenthesis_after_argument_list"],
+		[/SyntaxError: missing \) after condition/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Missing_parenthesis_after_condition"],
+		[/SyntaxError: missing : after property id/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Missing_colon_after_property_id"],
+		[/SyntaxError: missing ; before statement/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Missing_semicolon_before_statement"],
+		[/SyntaxError: missing = in const declaration/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Missing_initializer_in_const"],
+		[/SyntaxError: missing \] after element list/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Missing_bracket_after_list"],
+		[/SyntaxError: missing formal parameter/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Missing_formal_parameter"],
+		[/SyntaxError: missing name after . operator/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Missing_name_after_dot_operator"],
+		[/SyntaxError: missing variable name/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/No_variable_name"],
+		[/SyntaxError: missing \} after function body/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Missing_curly_after_function_body"],
+		[/SyntaxError: missing \} after property list/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Missing_curly_after_property_list"],
+		[/SyntaxError: redeclaration of formal parameter (\S+)/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Redeclared_parameter"],
+		[/SyntaxError: return not in function/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Bad_return_or_yield"],
+		[/SyntaxError: test for equality (==) mistyped as assignment (=)?/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Equal_as_assign"],
+		[/SyntaxError: unterminated string literal/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Unterminated_string_literal"],
+		[/TypeError: (\S+) has no properties/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/No_properties"],
+		[/TypeError: (\S+) is (not) (\S+)/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Unexpected_type"],
+		[/TypeError: (\S+) is not a constructor/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Not_a_constructor"],
+		[/TypeError: (\S+) is not a function/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Not_a_function"],
+		[/TypeError: (\S+) is not a non-null object/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/No_non-null_object"],
+		[/TypeError: (\S+) is read-only/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Read-only"],
+		[/TypeError: (\S+) is not iterable/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/is_not_iterable"],
+		[/TypeError: More arguments needed/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/More_arguments_needed"],
+		[/TypeError: Reduce of empty array with no initial value/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Reduce_of_empty_array_with_no_initial_value"],
+		[/TypeError: X.prototype.y called on incompatible type/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Called_on_incompatible_type"],
+		[/TypeError: can't access dead object/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Dead_object"],
+		[/TypeError: can't access property (\S+) of (\S+)/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Cant_access_property"],
+		[/TypeError: can't assign to property (\S+) on (\S+): not an object/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Cant_assign_to_property"],
+		[/TypeError: can't define property (\S+): \"obj\" is not extensible/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Cant_define_property_object_not_extensible"],
+		[/TypeError: can't delete non-configurable array element/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Non_configurable_array_element"],
+		[/TypeError: can't redefine non-configurable property (\S+)/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Cant_redefine_property"],
+		[/TypeError: cannot use 'in' operator to search for (\S+) in (\S+)/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/in_operator_no_object"],
+		[/TypeError: cyclic object value/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Cyclic_object_value"],
+		[/TypeError: invalid 'instanceof' operand (\S+)/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/invalid_right_hand_side_instanceof_operand"],
+		[/TypeError: invalid Array.prototype.sort argument/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Array_sort_argument"],
+		[/TypeError: invalid arguments/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Typed_array_invalid_arguments"],
+		[/TypeError: invalid assignment to const (\S+)/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Invalid_const_assignment"],
+		[/TypeError: property (\S+) is non-configurable and can't be deleted/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Cant_delete"],
+		[/TypeError: setting getter-only property (\S+)/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Getter_only"],
+		[/TypeError: variable (\S+) redeclares argument/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Var_hides_argument"],
+		[/URIError: malformed URI sequence/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Malformed_URI"],
+		[/Warning: 08\/09 is not a legal ECMA-262 octal constant/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Bad_octal"],
+		[/Warning: -file- is being assigned a \/\/# sourceMappingURL, but already has one/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Already_has_pragma"],
+		[/Warning: Date.prototype.toLocaleFormat is deprecated/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Deprecated_toLocaleFormat"],
+		[/Warning: JavaScript 1.6's for-each-in loops are deprecated/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/For-each-in_loops_are_deprecated"],
+		[/Warning: String.x is deprecated; use String.prototype.x instead/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Deprecated_String_generics"],
+		[/Warning: expression closures are deprecated/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Deprecated_expression_closures"],
+		[/Warning: unreachable code after return statement/, "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Stmt_after_return"],
+	];
 
-
-	if (!popup) {
-		popup = document.createElement('iframe');
-		popup.src = popupUrl;
-		popup.frameBorder = 0;
-		popup.style.cssText = 'position: fixed !important; bottom: 550px !important; right: 50px !important; z-index: 2147483647 !important;';
-		popup.height = '50px';
-		(document.body || document.documentElement).appendChild(popup);
-	}
-	else {
-		popup.contentWindow.postMessage({
-			_reloadPopup: true,
-			url: popupUrl
-		}, '*');
-	}
-}
-
-function showErrorNotification(popupUrl) {
-
-	if (options.showPopup) {
-		showPopup(popupUrl);
-	}
-
-	if (!icon && (options.showIcon || options.showPopup)) {
-		icon = document.createElement('img');
-		icon.src = chrome.extension.getURL('img/error_38.png');
-		icon.title = 'Some errors occurred on this page. Click to see details.';
-		icon.style.cssText = 'position: fixed !important; bottom: 10px !important; right: 10px !important; cursor: pointer !important; z-index: 2147483647 !important; width: 38px !important; height: 38px !important; min-height: 38px !important; min-width: 38px !important; max-height: 38px !important; max-width: 38px !important;';
-		icon.onclick = function () {
-			if (!popup) {
-				showPopup(popupUrl);
-			}
-			else {
-				popup.remove();
-				popup = null;
-			}
-		};
-		if (options.showPopupOnMouseOver) {
-			icon.onmouseover = function () {
-				if (!popup) {
-					showPopup(popupUrl);
-				}
+	for (standardError of standardErrors) {
+		errorRegex = standardError[0];
+		m = errorText.match(errorRegex);
+		if (m) {
+			// Return the generic version of the error, stripping out regex symbols
+			cleanErrorText = (errorRegex.toString().replace(/\(\\S\+\)/g, "").slice(1, -1));
+			// console.log(m);
+			// console.log(standardError[1]);
+			return {
+				"cleanError": cleanErrorText, "errorDocUrl": standardError[1]
 			};
 		}
-		(document.body || document.documentElement).appendChild(icon);
 	}
+	// Not match was found
+	return null;
 }
 
 function handleNewError(error) {
