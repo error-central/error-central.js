@@ -6,7 +6,7 @@ var doSo = true;
 var doGithub = true;
 var doEc = true;
 // Github Repo E.g. "error-central/javascript-errors-notifier"
-var repo = window.localStorage.getItem('repo') || "error-central/javascript-errors-notifier";
+var repo = window.localStorage.getItem('repo') || "error-central/error-central.js";
 
 /**
  * Find generic versino of error without code-specific variable names

@@ -4,6 +4,21 @@
 	<script src="./error-central.js" charset="utf-8"></script>
 
 	<script>
+		function fd(x) {
+			x(5);
+		}
+		function fc(x) {
+			fd(x);
+		}
+		function fb(x) {
+			fc(x);
+		}
+		function fa(x) {
+			fb(x);
+		}
+
+
+
 		function evalForError() {
 			try {
 				eval(document.getElementById('ta').value);
@@ -40,6 +55,8 @@
 	<button onclick="x=undefinedFunction(4)"><code>undefinedFunction(4)</code></button>
 
 	<button onclick="x=undefinedFunctionNoIssue(4)"><code>undefinedFunctionNoIssue()</code></button>
+
+	<button onclick="fa(4)"><code>Stack Function</code></button>
 
 	<form onsubmit="return false;">
 		<textarea id="ta" style="font-family: monospace;">
@@ -78,8 +95,20 @@
 	</script>
 
 	<h2>Link to error docs</h2>
+
 	<h3>Link to <em>localized</em> error docs</h3>
 
+	<h2>Search Issues</h2>
+
+	<h2>Show analytics</h2>
+
+	<h2>Search Stack Overflow</h2>
+
+	<h2>Search with dependencies</h2>
+
+	<h2>Search with Stack Trace</h2>
+
+	<h2>Machine Learning</h2>
 
 </body>
 
