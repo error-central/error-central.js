@@ -6,7 +6,27 @@ var doSo = true;
 var doGithub = true;
 var doEc = true;
 // Github Repo E.g. "error-central/javascript-errors-notifier"
-var repo = window.localStorage.getItem('repo') || "error-central/javascript-errors-notifier";
+var repo = window.localStorage.getItem('repo') || "error-central/error-central.js";
+
+var dependencies = {};
+
+function getDependencies() {
+	// We'd obviously need better smarts to know what branch you're working on,
+	// and what language. E.g. in python we'd be looking in `requirements.txt`
+	const depQueryUrl = `https://raw.githubusercontent.com/${repo}/master/package.json`;
+	let depReq = new XMLHttpRequest();
+	depReq.open('GET', depQueryUrl);
+	depReq.onload = () => {
+		try {
+			dependencies = JSON.parse(depReq.responseText).dependencies;
+		}
+		catch (e) {
+			console.warn(`Internal EC error: Could not load dependencies from ${depQueryUrl}`);
+		}
+	};
+	depReq.send();
+}
+
 
 /**
  * Find generic versino of error without code-specific variable names
@@ -332,6 +352,32 @@ function postError(error) {
 }
 
 /**
+ * Append known dependencies to error
+ */
+function searchDependencies(error) {
+	console.log(dependencies);
+	var class_str = `(
+		class Dependencies {
+			get See_Error_Central_Results_ಠ_ಠ() {
+					console.log('Error Central Results:', this);
+			}`;
+	// Create getters as "UI"
+	for (d of Object.keys(dependencies)) {
+		d = d.replace(/[^a-zA-Z0-9_]/g, "_");
+		class_str += `
+			get ${d}() {
+				console.log('Yo! ' + ${d});
+		} `;
+	}
+	class_str += `})`;
+	console.log(class_str);
+	var DClass = eval(class_str);
+	console.log(new DClass());
+
+	// Dammit not working. Maybe proxies? https://stackoverflow.com/questions/7891937/is-it-possible-to-implement-dynamic-getters-setters-in-javascript
+}
+
+/**
  * Handler for custom 'ErrorToExtension' message.
  * The various error detection methods all call this.
  */
@@ -340,24 +386,26 @@ document.addEventListener('ErrorToExtension', function (e) {
 
 	const { cleanError, errorDocUrl } = genericizeError(error.text);
 
-	const soP = searchSo(error);
-	const githubP = searchGithub(error);
-	const ecP = searchEc(error);
-	Promise.all([soP, githubP, ecP]).then(([soR, githubR, ecR]) => {
+	// const soP = searchSo(error);
+	// const githubP = searchGithub(error);
+	// const ecP = searchEc(error);
+	// Promise.all([soP, githubP, ecP]).then(([soR, githubR, ecR]) => {
 
-		console.groupCollapsed(
-			`%c${error.text} 🐛`,
-			'color: #fc212e; background-color: #fff0f0');
-		if (errorDocUrl) {
-			console.info(
-				`%cError docs: ${errorDocUrl}`,
-				'color: green; font-size: 10px');
-		}
-		soHandler(soR, error);
-		githubHandler(githubR, error);
-		ecHandler(ecR);
-		console.groupEnd();
-	});
+	// 	console.groupCollapsed(
+	// 		`% c${ error.text; } 🐛`,
+	// 		'color: #fc212e; background-color: #fff0f0');
+	// 	if (errorDocUrl) {
+	// 		console.info(
+	// 			`% cError docs: ${ errorDocUrl; } `,
+	// 			'color: green; font-size: 10px');
+	// 	}
+	// 	soHandler(soR, error);
+	// 	githubHandler(githubR, error);
+	// 	ecHandler(ecR);
+
+	// 	console.groupEnd();
+	// });
+	searchDependencies(error);
 
 	// Record the happening of this error
 	postError(error);
@@ -443,4 +491,6 @@ script.textContent = '(' + codeToInject + '())';
 (document.head || document.documentElement).appendChild(script);
 script.parentNode.removeChild(script);
 
-// };
+getDependencies();
+
+// };;;
