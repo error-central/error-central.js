@@ -1,22 +1,19 @@
 // var ec = new function () {
 
-var errors = [];
-var errorsLimit = 100;
-var tabId;
-var timer;
-var icon;
-var popup;
-var options;
-var isIFrame = window.top != window;
-
 // Settings
 var useCache = true;
 var doSo = true;
 var doGithub = true;
 var doEc = true;
-// E.g. "error-central/javascript-errors-notifier"
+// Github Repo E.g. "error-central/javascript-errors-notifier"
 var repo = window.localStorage.getItem('repo') || "error-central/javascript-errors-notifier";
 
+/**
+ * Find generic versino of error without code-specific variable names
+ * From: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors
+ * @param {*} errorText Text of error
+ * Returns { cleanError ,  errorDocUrl }
+ */
 function genericizeError(errorText) {
 	l = navigator.language;
 	standardErrors = [
@@ -116,25 +113,6 @@ function genericizeError(errorText) {
 	return {
 		"cleanError": null, "errorDocUrl": null
 	};
-}
-
-function handleNewError(error) {
-	var lastError = errors[errors.length - 1];
-	var isSameAsLast = lastError && lastError.text == error.text && lastError.url == error.url && lastError.line == error.line && lastError.col == error.col;
-	var isWrongUrl = !error.url || error.url.indexOf('://') === -1;
-	if (!isSameAsLast && !isWrongUrl) {
-		errors.push(error);
-		if (errors.length > errorsLimit) {
-			errors.shift();
-		}
-		// Do we still need this for anything??
-		// if (!timer) {
-		// 	timer = window.setTimeout(function () {
-		// 		timer = null;
-		// 		// Send errors to background extension code
-		// 	}, 200);
-		// }
-	}
 }
 
 /**
@@ -237,16 +215,20 @@ const soHandler = (r, error) => {
 		soResponse = JSON.parse(r);
 	}
 	catch (e) {
-		console.log("Internal EC error: Could not parse response from Stack Exchange");
+		console.warn("Internal EC error: Could not parse response from Stack Exchange");
 		return;
 	}
 	if (soResponse.error_id == 502) {
 		window.sessionStorage.removeItem(`so:${error.text}`); // Don't cache errors
-		console.log("EC internal error: too many requests to stack overfow.\nSetting `window.doSo=false` to disable.\n", soResponse);
+		console.warn("Internal EC error: too many requests to stack overfow.\n" +
+			"Setting `window.doSo=false` to disable.\n", soResponse);
 		window.doSo = false;
 		return;
 	}
 	else if (soResponse.items.length == 0) {
+		console.info(
+			`%cNo Stack Overflow results`,
+			'color: #fc212e; background-color: #fff0f0');
 		return;
 	}
 	// Format SO
@@ -285,7 +267,8 @@ const githubHandler = (r, error) => {
 	}
 	// Format Github
 	console.groupCollapsed(
-		`%c${githubResponse.items.length} Github issue${githubResponse.items.length > 1 ? "s" : ""}`,
+		`%c${githubResponse.items.length} Github issue` +
+		(githubResponse.items.length > 1 ? "s" : ""),
 		'color: #fc212e; background-color: #fff0f0');
 
 	for (const i of githubResponse.items.slice(0, 10)) {
@@ -336,8 +319,10 @@ function postError(error) {
 	});
 	handler = () => {
 		if (ecPostReq.readyState == 4 && ecPostReq.status == 200) {
-			// Error was logged
-			// console.info(`3️⃣ Got wanderingstan response X: `, ecPostReq.responseText)
+			// Success
+		}
+		else if (ecPostReq.status != 200) {
+			console.warn("Internal EC error: Could not log error to server.", ecPostReq);
 		}
 	};
 	let ecPostReq = new XMLHttpRequest();
@@ -361,31 +346,21 @@ document.addEventListener('ErrorToExtension', function (e) {
 	Promise.all([soP, githubP, ecP]).then(([soR, githubR, ecR]) => {
 
 		console.groupCollapsed(
-			`%c${error.text} 🐛Error Central insights`,
+			`%c${error.text} 🐛`,
 			'color: #fc212e; background-color: #fff0f0');
 		if (errorDocUrl) {
 			console.info(
 				`%cError docs: ${errorDocUrl}`,
 				'color: green; font-size: 10px');
 		}
-		// soHandler(soR, error);
+		soHandler(soR, error);
 		githubHandler(githubR, error);
 		ecHandler(ecR);
 		console.groupEnd();
 	});
+
+	// Record the happening of this error
 	postError(error);
-
-	if (isIFrame) {
-		window.top.postMessage({
-			_iframeError: true,
-			_fromJEN: true,
-			error: error
-		}, '*');
-	}
-	else {
-		handleNewError(error);
-	}
-
 });
 
 /**
@@ -467,43 +442,5 @@ var script = document.createElement('script');
 script.textContent = '(' + codeToInject + '())';
 (document.head || document.documentElement).appendChild(script);
 script.parentNode.removeChild(script);
-
-function handleInternalMessage(data) {
-	if (!isIFrame && (!data.tabId || data.tabId == tabId)) {
-		if (data._clear) {
-			errors = [];
-			if (popup) {
-				popup.remove();
-				popup = null;
-			}
-			if (icon) {
-				icon.remove();
-				icon = null;
-			}
-		}
-		else if (data._resize && popup) {
-			var maxHeight = Math.round(window.innerHeight * options.popupMaxHeight / 100) - 60;
-			var maxWidth = Math.round(window.innerWidth * options.popupMaxWidth / 100) - 60;
-			var height = data.height < maxHeight ? data.height : maxHeight;
-			var width = data.width < maxWidth ? data.width : maxWidth;
-			popup.height = (width == maxWidth ? height + 10 : height) + 'px'; // scroll fix
-			popup.width = (height == maxHeight ? width + 10 : width) + 'px'; // scroll fix
-			popup.style.height = popup.height;
-			popup.style.width = popup.width;
-		}
-		else if (data._closePopup && popup) {
-			popup.style.display = 'none';
-		}
-		else if (data._iframeError) {
-			handleNewError(data.error);
-		}
-	}
-}
-
-window.addEventListener('message', function (event) {
-	if (typeof event.data === 'object' && event.data && typeof event.data._fromJEN !== 'undefined' && event.data._fromJEN) {
-		handleInternalMessage(event.data);
-	}
-});
 
 // };
