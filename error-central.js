@@ -96,6 +96,7 @@ function genericizeError(errorText) {
 		[/Warning: unreachable code after return statement/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Stmt_after_return"],
 	];
 
+
 	for (standardError of standardErrors) {
 		errorRegex = standardError[0];
 		m = errorText.match(errorRegex);
@@ -113,6 +114,34 @@ function genericizeError(errorText) {
 	return {
 		"cleanError": null, "errorDocUrl": null
 	};
+}
+
+/**
+ * Log Stack exchange formatted HTML as good as possible
+ * to console.log()
+ */
+function consoleHtml(str) {
+	str = str.replace(/<pre><code>/g, "<precode>");
+	str = str.replace(/<\/code><\/pre>/g, "</precode>");
+	str = str.replace(/\n\n/g, "\n");
+	let myRe = /(<p>|<precode>|<code>|<\/code>)/g;
+	let myArray;
+	let out = [];
+	while ((myArray = myRe.exec(str)) !== null) {
+		if (myArray[0] == "<p>")
+			out.push('"color: #242729; font-family: Arial, Helvetica;"');
+		else if (myArray[0] == "<precode>")
+			out.push('"color: black; background-color: #eff0f1; font-family: Consolas,Menlo,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New,monospace;"');
+		else if (myArray[0] == "<code>")
+			out.push('"color: black; background-color: #eff0f1; font-family: monospace, Courier;"');
+		else if (myArray[0] == "<\\code>")
+			out.push('"color: #242729; font-family: Arial, Helvetica;"'); // same as <p>
+	}
+	str = str.replace(myRe, "%c");
+	str = str.replace(/(<\/p>|<\/precode>)/g, "");
+	str = str.replace(/"/g, "'");
+	logcode = `console.log(\`${str}\`,${out.join(",")});`;
+	eval(logcode);
 }
 
 /**
@@ -239,7 +268,7 @@ const soHandler = (r, error) => {
 		console.groupCollapsed(
 			`%c${i.title} (${i.answer_count} answers)\n${i.link}`,
 			'color: green; font-size: 12px; font-family: Arial,"Helvetica Neue",Helvetica,sans-serif');
-		console.log(i.body);
+		consoleHtml(i.body);
 		console.groupEnd();
 	}
 	if (soResponse.items.length > 10) {
