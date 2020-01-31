@@ -3,6 +3,7 @@
 // Settings
 var useCache = true;
 var doSo = true;
+var doSoGeneric = true;
 var doGithub = true;
 var doEc = true;
 // Github Repo E.g. "error-central/javascript-errors-notifier"
@@ -59,15 +60,15 @@ function genericizeError(errorText) {
 		[/SyntaxError: missing \} after property list/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Missing_curly_after_property_list"],
 		[/SyntaxError: redeclaration of formal parameter (\S+)/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Redeclared_parameter"],
 		[/SyntaxError: return not in function/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Bad_return_or_yield"],
-		[/SyntaxError: test for equality (==) mistyped as assignment (=)?/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Equal_as_assign"],
+		[/SyntaxError: test for equality \(==\) mistyped as assignment \(=\)?/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Equal_as_assign"],
 		[/SyntaxError: unterminated string literal/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Unterminated_string_literal"],
 		[/TypeError: (\S+) has no properties/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/No_properties"],
-		[/TypeError: (\S+) is (not) (\S+)/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Unexpected_type"],
 		[/TypeError: (\S+) is not a constructor/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Not_a_constructor"],
 		[/TypeError: (\S+) is not a function/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Not_a_function"],
 		[/TypeError: (\S+) is not a non-null object/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/No_non-null_object"],
 		[/TypeError: (\S+) is read-only/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Read-only"],
 		[/TypeError: (\S+) is not iterable/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/is_not_iterable"],
+		[/TypeError: (\S+) is \(not\) (\S+)/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Unexpected_type"],
 		[/TypeError: More arguments needed/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/More_arguments_needed"],
 		[/TypeError: Reduce of empty array with no initial value/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Reduce_of_empty_array_with_no_initial_value"],
 		[/TypeError: X.prototype.y called on incompatible type/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Called_on_incompatible_type"],
@@ -106,7 +107,7 @@ function genericizeError(errorText) {
 			// console.log(m);
 			// console.log(standardError[1]);
 			return {
-				"cleanError": cleanErrorText, "errorDocUrl": standardError[1]
+				"genericError": cleanErrorText, "errorDocUrl": standardError[1]
 			};
 		}
 	}
@@ -140,8 +141,14 @@ function consoleHtml(str) {
 	str = str.replace(myRe, "%c");
 	str = str.replace(/(<\/p>|<\/precode>)/g, "");
 	str = str.replace(/"/g, "'");
-	logcode = `console.log(\`${str}\`,${out.join(",")});`;
-	eval(logcode);
+	const logcode = `console.log(\`${str}\`,${out.join(",")});`;
+	try {
+		eval(logcode);
+	}
+	catch (e) {
+		// Fallback
+		console.log(str);
+	}
 }
 
 /**
@@ -150,7 +157,7 @@ function consoleHtml(str) {
  */
 function searchSo(error) {
 	return new Promise((resolve, reject) => {
-		if (!doSo) {
+		if (!doSo || !error) {
 			return resolve("");
 		}
 		let r = window.sessionStorage.getItem(`so:${error.text}`);
@@ -256,13 +263,13 @@ const soHandler = (r, error) => {
 	}
 	else if (soResponse.items.length == 0) {
 		console.info(
-			`%cNo Stack Overflow results`,
+			`%cNo Stack Overflow results for ${error.text}`,
 			'color: #fc212e; background-color: #fff0f0');
 		return;
 	}
 	// Format SO
 	console.groupCollapsed(
-		`%c${soResponse.items.length} Stack Overflow results`,
+		`%c${soResponse.items.length} Stack Overflow results for '${error.text}'`,
 		'color: #fc212e; background-color: #fff0f0');
 	for (const i of soResponse.items.slice(0, 10)) {
 		console.groupCollapsed(
@@ -367,12 +374,16 @@ function postError(error) {
 document.addEventListener('ErrorToExtension', function (e) {
 	const error = e.detail;
 
-	const { cleanError, errorDocUrl } = genericizeError(error.text);
+	const { genericError, errorDocUrl } = genericizeError(error.text);
 
-	const soP = searchSo(error);
-	const githubP = searchGithub(error);
-	const ecP = searchEc(error);
-	Promise.all([soP, githubP, ecP]).then(([soR, githubR, ecR]) => {
+	let promises = [
+		searchSo(error),
+		searchGithub(error),
+		searchEc(error),
+		searchSo(doSoGeneric ? genericError : null),
+	];
+
+	Promise.all(promises).then(([soR, githubR, ecR, soGenericR]) => {
 
 		console.groupCollapsed(
 			`%c${error.text} 🐛`,
@@ -382,7 +393,8 @@ document.addEventListener('ErrorToExtension', function (e) {
 				`%cError docs: ${errorDocUrl}`,
 				'color: green; font-size: 10px');
 		}
-		soHandler(soR, error);
+		soHandler(soR, error); // Full error search
+		soHandler(soGenericR, { "text": genericError }); // Generic error search
 		githubHandler(githubR, error);
 		ecHandler(ecR);
 		console.groupEnd();
