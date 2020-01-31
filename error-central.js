@@ -9,6 +9,55 @@ var doEc = true;
 // Github Repo E.g. "error-central/javascript-errors-notifier"
 var repo = window.localStorage.getItem('repo') || "error-central/error-central.js";
 
+var dependencies = {};
+
+function getDependencies() {
+	// We'd obviously need better smarts to know what branch you're working on,
+	// and what language. E.g. in python we'd be looking in `requirements.txt`
+	const depQueryUrl = `https://raw.githubusercontent.com/${repo}/master/package.json`;
+	let depReq = new XMLHttpRequest();
+	depReq.open('GET', depQueryUrl);
+	depReq.onload = () => {
+		try {
+			dependencies = JSON.parse(depReq.responseText).dependencies;
+		}
+		catch (e) {
+			console.warn(`Internal EC error: Could not load dependencies from ${depQueryUrl}`);
+		}
+	};
+	depReq.send();
+}
+getDependencies();
+
+
+
+function decodeHtmlEntity(text) {
+	// via: https://stackoverflow.com/a/29824550/59913
+	var decodeNumericHtmlEntity = function (str) {
+		return str.replace(/&#(\d+);/g, function (match, dec) {
+			return String.fromCharCode(dec);
+		});
+	};
+	const entities = {
+		'amp': '&',
+		'apos': '\'',
+		'#x27': '\'',
+		'#x2F': '/',
+		'#39': '\'',
+		'#47': '/',
+		'lt': '<',
+		'gt': '>',
+		'nbsp': ' ',
+		'quot': '"'
+	};
+	text = text.replace(/&([^;]+);/gm, function (match, entity) {
+		return entities[entity] || match;
+	});
+	text = decodeNumericHtmlEntity(text);
+	return text;;
+}
+
+
 /**
  * Find generic versino of error without code-specific variable names
  * From: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors
@@ -273,8 +322,9 @@ const soHandler = (r, error) => {
 		'color: #fc212e; background-color: #fff0f0');
 	for (const i of soResponse.items.slice(0, 10)) {
 		console.groupCollapsed(
-			`%c${i.title} (${i.answer_count} answers)\n${i.link}`,
-			'color: green; font-size: 12px; font-family: Arial,"Helvetica Neue",Helvetica,sans-serif');
+			`%c${decodeHtmlEntity(i.title)} (${i.answer_count} answers)\n%c${i.link}`,
+			'color: green; font-size: 12px; font-family: Arial,"Helvetica Neue",Helvetica,sans-serif',
+			'color: blue; font-size: 10px; font-family: Arial,"Helvetica Neue",Helvetica,sans-serif; font-weight: normal;');
 		consoleHtml(i.body);
 		console.groupEnd();
 	}
@@ -309,8 +359,9 @@ const githubHandler = (r, error) => {
 
 	for (const i of githubResponse.items.slice(0, 10)) {
 		console.groupCollapsed(
-			`%c${i.title} \n${i.html_url} `,
-			'color: green; font-size: 10px');
+			`%c${i.title} \n%c${i.html_url} `,
+			'color: green; font-size: 12px; font-family: Arial,"Helvetica Neue",Helvetica,sans-serif',
+			'color: blue; font-size: 10px; font-family: Arial,"Helvetica Neue",Helvetica,sans-serif; font-weight: normal;');
 		console.log(i.body);
 		console.groupEnd();
 	}
@@ -368,6 +419,22 @@ function postError(error) {
 }
 
 /**
+ * Append known dependencies to error
+ */
+function searchDependencies(error) {
+	console.groupCollapsed(
+		`%cSearch Dependencies`,
+		'color: #fc212e; background-color: #fff0f0');
+	for (d of Object.keys(dependencies)) {
+		console.log(`%c${d} : %chttps://stackoverflow.com/search?q=${encodeURIComponent(d)}%20${encodeURIComponent(error.text)}`,
+			'color: green; font-family: Helvetica, Arial; font-size: 10px',
+			'color: black; font-family: monospace; font-size: 10px'
+		);
+	}
+	console.groupEnd();
+}
+
+/**
  * Handler for custom 'ErrorToExtension' message.
  * The various error detection methods all call this.
  */
@@ -383,6 +450,7 @@ document.addEventListener('ErrorToExtension', function (e) {
 		searchSo(doSoGeneric ? genericError : null),
 	];
 
+
 	Promise.all(promises).then(([soR, githubR, ecR, soGenericR]) => {
 
 		console.groupCollapsed(
@@ -393,10 +461,11 @@ document.addEventListener('ErrorToExtension', function (e) {
 				`%cError docs: ${errorDocUrl}`,
 				'color: green; font-size: 10px');
 		}
+		ecHandler(ecR);
 		soHandler(soR, error); // Full error search
 		soHandler(soGenericR, { "text": genericError }); // Generic error search
+		searchDependencies(error);
 		githubHandler(githubR, error);
-		ecHandler(ecR);
 		console.groupEnd();
 	});
 
