@@ -16,7 +16,7 @@ var repo = window.localStorage.getItem('repo') || "error-central/error-central.j
  * Returns { cleanError ,  errorDocUrl }
  */
 function genericizeError(errorText) {
-	l = navigator.language;
+	l = navigator.language; // e.g. 'en-EN', 'de-DE'
 	standardErrors = [
 		[/Error: Permission denied to access property (\S+)/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Property_access_denied"],
 		[/InternalError: too much recursion/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Too_much_recursion"],
@@ -122,7 +122,7 @@ function genericizeError(errorText) {
  * to console.log()
  */
 function consoleHtml(str) {
-	str = str.replace(/<pre><code>/g, "<precode>");
+	str = str.replace(/<pre( class=".*?")?><code>/g, "<precode>");
 	str = str.replace(/<\/code><\/pre>/g, "</precode>");
 	str = str.replace(/\n\n/g, "\n");
 	let myRe = /(<p>|<precode>|<code>|<\/code>)/g;
