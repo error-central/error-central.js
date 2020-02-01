@@ -343,7 +343,7 @@ function searchEc(error) {
 		}
 		else {
 			// No cache hit, do it
-			const ecQueryUrl = `https://wanderingstan.com/ec/ec-search.php?q=${encodeURIComponent(error.text)}`;
+			const ecQueryUrl = `https://wanderingstan.com/ec/ec-search?q=${encodeURIComponent(error.text)}`;
 			let ecReq = new XMLHttpRequest();
 			ecReq.open('GET', ecQueryUrl);
 			ecReq.onload = () => {
@@ -481,7 +481,7 @@ function postError(error) {
 		}
 	};
 	let ecPostReq = new XMLHttpRequest();
-	ecPostReq.open('POST', 'https://wanderingstan.com/ec/ec-monitor.php', true);
+	ecPostReq.open('POST', 'https://wanderingstan.com/ec/ec-monitor', true);
 	ecPostReq.onreadystatechange = handler;
 	ecPostReq.send(params);
 }
