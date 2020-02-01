@@ -312,18 +312,22 @@ const soHandler = (r, error) => {
 	}
 	else if (soResponse.items.length == 0) {
 		console.info(
-			`%cNo Stack Overflow results for ${error.text}`,
-			'color: #fc212e; background-color: #fff0f0');
+			`%cNo Stack Overflow results for %c${error.text}`,
+			'color: #fc212e; background-color: #fff0f0',
+			'color: #fc212e; background-color: #fff0f0; font-style: italic'
+		);
 		return;
 	}
 	// Format SO
 	console.groupCollapsed(
-		`%c${soResponse.items.length} Stack Overflow results for '${error.text}'`,
-		'color: #fc212e; background-color: #fff0f0');
+		`%c${soResponse.items.length} Stack Overflow results for %c${error.text}`,
+		'color: #fc212e; background-color: #fff0f0',
+		'color: #fc212e; background-color: #fff0f0; font-style: italic'
+	);
 	for (const i of soResponse.items.slice(0, 10)) {
 		console.groupCollapsed(
 			`%c${decodeHtmlEntity(i.title)} (${i.answer_count} answers)\n%c${i.link}`,
-			'color: green; font-size: 12px; font-family: Arial,"Helvetica Neue",Helvetica,sans-serif',
+			'color: green; font-size: 12px; font-family: Arial,"Helvetica Neue",Helvetica,sans-serif; font-weight: normal;',
 			'color: blue; font-size: 10px; font-family: Arial,"Helvetica Neue",Helvetica,sans-serif; font-weight: normal;');
 		consoleHtml(i.body);
 		console.groupEnd();
