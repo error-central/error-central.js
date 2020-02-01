@@ -212,7 +212,6 @@ function searchSo(error) {
 		let r = window.sessionStorage.getItem(`so:${error.text}`);
 		if (r && useCache) {
 			// Cache hit
-			// console.info('SO cache hit')
 			return resolve(r);
 		}
 		else {
@@ -221,8 +220,8 @@ function searchSo(error) {
 			let soReq = new XMLHttpRequest();
 			soReq.open('GET', soQueryUrl);
 			soReq.onload = () => {
-				window.sessionStorage.setItem( // Cache
-					`so:${error.text}`, soReq.responseText);
+				window.sessionStorage.setItem(
+					`so:${error.text}`, soReq.responseText); // Cache
 				resolve(soReq.responseText);
 			};
 			soReq.send();
@@ -243,7 +242,6 @@ function searchGithub(error) {
 		let r = window.sessionStorage.getItem(`github:${error.text}`);
 		if (r && useCache) {
 			// Cache hit
-			// console.info('github cache hit')
 			resolve(r);
 		}
 		else {
@@ -274,7 +272,6 @@ function searchEc(error) {
 		let r = window.sessionStorage.getItem(`ec:${error.text}`);
 		if (false && r && useCache) {
 			// Cache hit
-			console.info('ec cache hit');
 			resolve(r);
 		}
 		else {
