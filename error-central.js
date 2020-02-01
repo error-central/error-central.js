@@ -588,17 +588,17 @@ function codeToInject() {
 
 	// handle uncaught errors
 	window.addEventListener('error', function (e) {
-		if (e.filename) {
-			document.dispatchEvent(new CustomEvent('ErrorToExtension', {
-				detail: {
-					stack: e.error ? e.error.stack : null,
-					url: e.filename,
-					line: e.lineno,
-					col: e.colno,
-					text: e.message
-				}
-			}));
-		}
+		// if (e.filename) {
+		document.dispatchEvent(new CustomEvent('ErrorToExtension', {
+			detail: {
+				stack: e.error ? e.error.stack : null,
+				url: e.filename,
+				line: e.lineno,
+				col: e.colno,
+				text: e.message
+			}
+		}));
+		// }
 	});
 
 	// handle 404 errors

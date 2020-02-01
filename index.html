@@ -17,20 +17,30 @@
 			fb(x);
 		}
 
-
-
 		function evalForError() {
 			try {
 				eval(document.getElementById('ta').value);
+			} catch (e) {
+				throw e; // intentionally re-throw (caught by window.onerror)
 			}
-			catch (e) {
-				// console.log(e)
-				var error = new ErrorEvent('Eval event', e);
-				// NOT WORKING. :(
-				window.dispatchEvent(error);
-			};
-			return false;
+			// 	// console.log(e)
+			// 	var error = new ErrorEvent('Eval event', e);
+			// 	// NOT WORKING. :(
+			// 	window.dispatchEvent(error);
+			// };
+			// return false;
 		}
+
+		function jsonTest() {
+			try {
+				return JSON.parse({ "balance": 0, "count": 0, "time": 1323973673061, "firstname": "howard", "userId": 5383, "localid": 1, "freeExpiration": 0, "status": false });
+			} catch (e) {
+				throw e; // intentionally re-throw (caught by window.onerror)
+			}
+		}
+
+
+
 	</script>
 </head>
 
@@ -52,6 +62,11 @@
 	<button onclick="x=undefinedFunction(4)"><code>undefinedFunction(4)</code></button>
 
 	<button onclick="x=undefinedFunctionNoIssue(4)"><code>undefinedFunctionNoIssue()</code></button>
+
+	<button onclick='jsonTest()'>
+		<code>JSON.parse()</code>
+	</button>
+
 
 	<button onclick="fa(4)"><code>Stack Function</code></button>
 
