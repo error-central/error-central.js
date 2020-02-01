@@ -67,17 +67,63 @@ function decodeHtmlEntity(text) {
 function genericizeError(errorText) {
 	l = navigator.language; // e.g. 'en-EN', 'de-DE'
 	standardErrors = [
+		// JSON errors from: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/JSON_bad_parse
+		[/SyntaxError: JSON.parse: unterminated string literal/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/JSON_bad_parse"],
+		[/SyntaxError: JSON.parse: bad control character in string literal/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/JSON_bad_parse"],
+		[/SyntaxError: JSON.parse: bad character in string literal/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/JSON_bad_parse"],
+		[/SyntaxError: JSON.parse: bad Unicode escape/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/JSON_bad_parse"],
+		[/SyntaxError: JSON.parse: bad escape character/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/JSON_bad_parse"],
+		[/SyntaxError: JSON.parse: unterminated string/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/JSON_bad_parse"],
+		[/SyntaxError: JSON.parse: no number after minus sign/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/JSON_bad_parse"],
+		[/SyntaxError: JSON.parse: unexpected non-digit/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/JSON_bad_parse"],
+		[/SyntaxError: JSON.parse: missing digits after decimal point/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/JSON_bad_parse"],
+		[/SyntaxError: JSON.parse: unterminated fractional number/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/JSON_bad_parse"],
+		[/SyntaxError: JSON.parse: missing digits after exponent indicator/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/JSON_bad_parse"],
+		[/SyntaxError: JSON.parse: missing digits after exponent sign/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/JSON_bad_parse"],
+		[/SyntaxError: JSON.parse: exponent part is missing a number/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/JSON_bad_parse"],
+		[/SyntaxError: JSON.parse: unexpected end of data/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/JSON_bad_parse"],
+		[/SyntaxError: JSON.parse: unexpected keyword/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/JSON_bad_parse"],
+		[/SyntaxError: JSON.parse: unexpected character/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/JSON_bad_parse"],
+		[/SyntaxError: JSON.parse: end of data while reading object contents/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/JSON_bad_parse"],
+		[/SyntaxError: JSON.parse: expected property name or '\}'/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/JSON_bad_parse"],
+		[/SyntaxError: JSON.parse: end of data when ',' or '\]' was expected/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/JSON_bad_parse"],
+		[/SyntaxError: JSON.parse: expected ',' or '\]' after array element/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/JSON_bad_parse"],
+		[/SyntaxError: JSON.parse: end of data when property name was expected/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/JSON_bad_parse"],
+		[/SyntaxError: JSON.parse: expected double-quoted property name/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/JSON_bad_parse"],
+		[/SyntaxError: JSON.parse: end of data after property name when ':' was expected/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/JSON_bad_parse"],
+		[/SyntaxError: JSON.parse: expected ':' after property name in object/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/JSON_bad_parse"],
+		[/SyntaxError: JSON.parse: end of data after property value in object/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/JSON_bad_parse"],
+		[/SyntaxError: JSON.parse: expected ',' or '\}' after property value in object/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/JSON_bad_parse"],
+		[/SyntaxError: JSON.parse: expected ',' or '\}' after property-value pair in object literal/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/JSON_bad_parse"],
+		[/SyntaxError: JSON.parse: property names must be double-quoted strings/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/JSON_bad_parse"],
+		[/SyntaxError: JSON.parse: expected property name or '\}'/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/JSON_bad_parse"],
+		[/SyntaxError: JSON.parse: unexpected character/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/JSON_bad_parse"],
+		[/SyntaxError: JSON.parse: unexpected non-whitespace character after JSON data/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/JSON_bad_parse"],
+		[/SyntaxError: JSON.parse Error: Invalid character at position \{0\}/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/JSON_bad_parse"],
+		// List from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Not_a_constructor
+		[/TypeError: Math is not a constructor/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Not_a_constructor"],
+		[/TypeError: JSON is not a constructor/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Not_a_constructor"],
+		[/TypeError: Symbol is not a constructor/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Not_a_constructor"],
+		[/TypeError: Reflect is not a constructor/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Not_a_constructor"],
+		[/TypeError: Intl is not a constructor/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Not_a_constructor"],
+		[/TypeError: SIMD is not a constructor/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Not_a_constructor"],
+		[/TypeError: Atomics is not a constructor/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Not_a_constructor"],
+		// List from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors
 		[/Error: Permission denied to access property (\S+)/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Property_access_denied"],
 		[/InternalError: too much recursion/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Too_much_recursion"],
+		[/RangeError: Maximum call stack size exceeded/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Too_much_recursion"], // For Chrome
 		[/RangeError: argument is not a valid code point/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Not_a_codepoint"],
+		[/RangeError: Invalid code point \{0\}/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Not_a_codepoint"], // Chrome
 		[/RangeError: invalid array length/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Invalid_array_length"],
 		[/RangeError: invalid date/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Invalid_date"],
+		[/RangeError: invalid time value/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Invalid_date"], // Chrome
 		[/RangeError: precision is out of range/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Precision_range"],
 		[/RangeError: radix must be an integer/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Bad_radix"],
 		[/RangeError: repeat count must be less than infinity/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Resulting_string_too_large"],
 		[/RangeError: repeat count must be non-negative/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Negative_repetition_count"],
 		[/ReferenceError: (\S+) is not defined/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Not_defined"],
 		[/ReferenceError: assignment to undeclared variable (\S+)/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Undeclared_var"],
+		[/ReferenceError: (\S+) is not defined/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Undeclared_var"], // Chrome
 		[/ReferenceError: can't access lexical declaration`X' before initialization/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Cant_access_lexical_declaration_before_init"],
 		[/ReferenceError: deprecated caller or arguments usage/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Deprecated_caller_or_arguments_usage"],
 		[/ReferenceError: invalid assignment left-hand side/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Invalid_assignment_left-hand_side"],
@@ -95,19 +141,24 @@ function genericizeError(errorText) {
 		[/SyntaxError: function statement requires a name/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Unnamed_function_statement"],
 		[/SyntaxError: identifier starts immediately after numeric literal/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Identifier_after_number"],
 		[/SyntaxError: illegal character/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Illegal_character"],
+		[/SyntaxError: Invalid or unexpected token/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Illegal_character"], // Chrome
 		[/SyntaxError: invalid regular expression flag (\S+)/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Bad_regexp_flag"],
+		[/SyntaxError: Invalid regular expression flags/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Bad_regexp_flag"], // Chrome
 		[/SyntaxError: missing \) after argument list/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Missing_parenthesis_after_argument_list"],
 		[/SyntaxError: missing \) after condition/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Missing_parenthesis_after_condition"],
 		[/SyntaxError: missing : after property id/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Missing_colon_after_property_id"],
 		[/SyntaxError: missing ; before statement/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Missing_semicolon_before_statement"],
 		[/SyntaxError: missing = in const declaration/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Missing_initializer_in_const"],
+		[/SyntaxError: Missing initializer in const declaration/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Missing_initializer_in_const"], // Chrome
 		[/SyntaxError: missing \] after element list/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Missing_bracket_after_list"],
 		[/SyntaxError: missing formal parameter/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Missing_formal_parameter"],
 		[/SyntaxError: missing name after . operator/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Missing_name_after_dot_operator"],
 		[/SyntaxError: missing variable name/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/No_variable_name"],
+		[/SyntaxError: Unexpected token =/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/No_variable_name"], // Chrome
 		[/SyntaxError: missing \} after function body/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Missing_curly_after_function_body"],
 		[/SyntaxError: missing \} after property list/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Missing_curly_after_property_list"],
 		[/SyntaxError: redeclaration of formal parameter (\S+)/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Redeclared_parameter"],
+		[/SyntaxError: Identifier (\S+) has already been declared/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Redeclared_parameter"], // Chrome
 		[/SyntaxError: return not in function/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Bad_return_or_yield"],
 		[/SyntaxError: test for equality \(==\) mistyped as assignment \(=\)?/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Equal_as_assign"],
 		[/SyntaxError: unterminated string literal/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Unterminated_string_literal"],
@@ -115,26 +166,42 @@ function genericizeError(errorText) {
 		[/TypeError: (\S+) is not a constructor/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Not_a_constructor"],
 		[/TypeError: (\S+) is not a function/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Not_a_function"],
 		[/TypeError: (\S+) is not a non-null object/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/No_non-null_object"],
+		[/TypeError: Property description must be an object: (\S+) (Chrome)/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/No_non-null_object"], // Chrome
+		[/TypeError: Invalid value used in weak set/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/No_non-null_object"] // Chrome
 		[/TypeError: (\S+) is read-only/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Read-only"],
+		[/TypeError: Cannot assign to read only property (\S+) of /, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Read-only"], // Chrome
 		[/TypeError: (\S+) is not iterable/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/is_not_iterable"],
-		[/TypeError: (\S+) is \(not\) (\S+)/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Unexpected_type"],
+		[/TypeError: (\S+) is not a function or its return value is not iterable/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/is_not_iterable"], // Chrome
+		[/TypeError: (\S+) is (\S+)/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Unexpected_type"],
+		[/TypeError: (\S+) is not (\S+)/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Unexpected_type"],
 		[/TypeError: More arguments needed/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/More_arguments_needed"],
 		[/TypeError: Reduce of empty array with no initial value/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Reduce_of_empty_array_with_no_initial_value"],
 		[/TypeError: X.prototype.y called on incompatible type/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Called_on_incompatible_type"],
+		[/TypeError: Method Set.prototype.add called on incompatible receiver undefined/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Called_on_incompatible_type"], // Chrome
+		[/TypeError: Bind must be called on a function/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Called_on_incompatible_type"], // Chrome
 		[/TypeError: can't access dead object/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Dead_object"],
 		[/TypeError: can't access property (\S+) of (\S+)/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Cant_access_property"],
 		[/TypeError: can't assign to property (\S+) on (\S+): not an object/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Cant_assign_to_property"],
+		[/TypeError: Cannot create property (\S+) on (\S+)/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Cant_assign_to_property"], // Manually added for Chrome
 		[/TypeError: can't define property (\S+): \"obj\" is not extensible/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Cant_define_property_object_not_extensible"],
+		[/TypeError: Cannot define property: (\S+), object is not extensible./, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Cant_define_property_object_not_extensible"], // Chrome
 		[/TypeError: can't delete non-configurable array element/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Non_configurable_array_element"],
+		[/TypeError: Cannot delete property (\S+) of (.+)/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Non_configurable_array_element"], // Chrome
 		[/TypeError: can't redefine non-configurable property (\S+)/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Cant_redefine_property"],
+		[/TypeError: Cannot redefine property: (\S+)/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Cant_redefine_property"], // Chrome
 		[/TypeError: cannot use 'in' operator to search for (\S+) in (\S+)/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/in_operator_no_object"],
 		[/TypeError: cyclic object value/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Cyclic_object_value"],
+		[/TypeError: Converting circular structure to JSON/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Cyclic_object_value"], // Chrome
 		[/TypeError: invalid 'instanceof' operand (\S+)/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/invalid_right_hand_side_instanceof_operand"],
+		[/TypeError: Right-hand side of 'instanceof' is not callable/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/invalid_right_hand_side_instanceof_operand"], // Chrome
 		[/TypeError: invalid Array.prototype.sort argument/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Array_sort_argument"],
 		[/TypeError: invalid arguments/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Typed_array_invalid_arguments"],
 		[/TypeError: invalid assignment to const (\S+)/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Invalid_const_assignment"],
+		[/TypeError: Assignment to constant variable./, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Invalid_const_assignment"], // Chrome
 		[/TypeError: property (\S+) is non-configurable and can't be deleted/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Cant_delete"],
+		[/TypeError: Cannot delete property (\S+) of (.+)/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Cant_delete"], // Chrome
 		[/TypeError: setting getter-only property (\S+)/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Getter_only"],
+		[/TypeError: Cannot set property (\S+) of (\S+) which has only a getter/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Getter_only"], // Chrome
 		[/TypeError: variable (\S+) redeclares argument/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Var_hides_argument"],
 		[/URIError: malformed URI sequence/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Malformed_URI"],
 		[/Warning: 08\/09 is not a legal ECMA-262 octal constant/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Bad_octal"],
