@@ -7,14 +7,19 @@ var doSoGeneric = true;
 var doGithub = true;
 var doEc = true;
 // Github Repo E.g. "error-central/javascript-errors-notifier"
-var repo = window.localStorage.getItem('repo') || "error-central/error-central.js";
-
+const repo = window.localStorage.getItem('repo') || "error-central/error-central.js";
+const depQueryUrl = `https://raw.githubusercontent.com/${repo}/master/package.json`;
+const maxSearchResults = 10;
 var dependencies = {};
+var devDependencies = {};
+
+const cssUrl = 'color: blue; font-size: 10px; font-family: Arial,"Helvetica Neue",Helvetica,sans-serif; font-weight: normal;';
+const cssText = 'color: green; font-size: 12px; font-family: Arial,"Helvetica Neue",Helvetica,sans-serif; font-weight: normal;';
+const cssHeading = cssText + 'font-weight:bold;';
 
 function getDependencies() {
 	// We'd obviously need better smarts to know what branch you're working on,
 	// and what language. E.g. in python we'd be looking in `requirements.txt`
-	const depQueryUrl = `https://raw.githubusercontent.com/${repo}/master/package.json`;
 	let depReq = new XMLHttpRequest();
 	depReq.open('GET', depQueryUrl);
 	depReq.onload = () => {
@@ -23,6 +28,12 @@ function getDependencies() {
 		}
 		catch (e) {
 			console.warn(`Internal EC error: Could not load dependencies from ${depQueryUrl}`);
+		}
+		try {
+			devDependencies = JSON.parse(depReq.responseText).devDependencies;
+		}
+		catch (e) {
+			console.warn(`Internal EC error: Could not load devDependencies from ${depQueryUrl}`);
 		}
 	};
 	depReq.send();
@@ -388,16 +399,22 @@ const soHandler = (r, error) => {
 		'color: #fc212e; background-color: #fff0f0',
 		'color: #fc212e; background-color: #fff0f0; font-style: italic'
 	);
-	for (const i of soResponse.items.slice(0, 10)) {
+	for (const i of soResponse.items.slice(0, maxSearchResults)) {
 		console.groupCollapsed(
 			`%c${decodeHtmlEntity(i.title)} (${i.answer_count} answers)\n%c${i.link}`,
-			'color: green; font-size: 12px; font-family: Arial,"Helvetica Neue",Helvetica,sans-serif; font-weight: normal;',
-			'color: blue; font-size: 10px; font-family: Arial,"Helvetica Neue",Helvetica,sans-serif; font-weight: normal;');
+			cssText,
+			cssUrl
+		);
 		consoleHtml(i.body);
 		console.groupEnd();
 	}
-	if (soResponse.items.length > 10) {
-		console.log(`${soResponse.items.length - 10} more...`);
+	if (soResponse.items.length > maxSearchResults) {
+		const soSearchLink = `https://stackoverflow.com/search?q=${encodeURIComponent(error.text)}`;
+		console.log(
+			`%c...${soResponse.items.length - maxSearchResults} more results on stackoverflow.com\n%c${soSearchLink}`,
+			cssText,
+			cssUrl
+		);
 	}
 	console.groupEnd();
 };
@@ -415,7 +432,7 @@ const githubHandler = (r, error) => {
 			'color: #fc212e; background-color: #fff0f0');
 		console.info(
 			`%chttps://github.com/${repo}/issues/new?title=${encodeURIComponent(error.text)}&body=`,
-			'color: green; font-size: 10px');
+			cssUrl);
 		console.groupEnd();
 		return;
 	}
@@ -429,7 +446,8 @@ const githubHandler = (r, error) => {
 		console.groupCollapsed(
 			`%c${i.title} \n%c${i.html_url} `,
 			'color: green; font-size: 12px; font-family: Arial,"Helvetica Neue",Helvetica,sans-serif',
-			'color: blue; font-size: 10px; font-family: Arial,"Helvetica Neue",Helvetica,sans-serif; font-weight: normal;');
+			cssUrl
+		);
 		console.log(i.body);
 		console.groupEnd();
 	}
@@ -490,16 +508,31 @@ function postError(error) {
  * Append known dependencies to error
  */
 function searchDependencies(error) {
-	console.groupCollapsed(
-		`%cSearch Dependencies`,
-		'color: #fc212e; background-color: #fff0f0');
-	for (d of Object.keys(dependencies)) {
-		console.log(`%c${d} : %chttps://stackoverflow.com/search?q=${encodeURIComponent(d)}%20${encodeURIComponent(error.text)}`,
-			'color: green; font-family: Helvetica, Arial; font-size: 10px',
-			'color: black; font-family: monospace; font-size: 10px'
+	if (dependencies) {
+		console.groupCollapsed(
+			`%cDependencies`,
+			'color: #fc212e; background-color: #fff0f0');
+		for (const d of Object.keys(dependencies)) {
+			console.log(`%c• ${d} : %chttps://stackoverflow.com/search?q=${encodeURIComponent(d)}%20${encodeURIComponent(error.text)}`,
+				cssText,
+				cssUrl
+			);
+		}
+		if (Object.keys(devDependencies).length > 0) {
+			console.log(`%cdevDependencies`, cssHeading);
+		}
+		for (const d of Object.keys(devDependencies)) {
+			console.log(`%c• ${d} : %chttps://stackoverflow.com/search?q=${encodeURIComponent(d)}%20${encodeURIComponent(error.text)}`,
+				cssText,
+				cssUrl
+			);
+		}
+		console.log(`%cDependencies found at: %c${depQueryUrl}`,
+			cssText,
+			cssUrl
 		);
+		console.groupEnd();
 	}
-	console.groupEnd();
 }
 
 /**
