@@ -224,13 +224,12 @@ function genericizeError(errorText) {
 		[/Warning: unreachable code after return statement/, "https://developer.mozilla.org/" + l + "/docs/Web/JavaScript/Reference/Errors/Stmt_after_return"],
 	];
 
-
 	for (standardError of standardErrors) {
 		errorRegex = standardError[0];
 		m = errorText.match(errorRegex);
 		if (m) {
 			// Return the generic version of the error, stripping out regex symbols
-			cleanErrorText = (errorRegex.toString().replace(/\(\\S\+\)/g, "").slice(1, -1));
+			cleanErrorText = (errorRegex.toString().replace(/ ?\(\\S\+\)/g, "").slice(1, -1));
 			// console.log(m);
 			// console.log(standardError[1]);
 			return {
