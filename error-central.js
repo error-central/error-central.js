@@ -520,15 +520,15 @@ function searchDependencies(error) {
 		}
 		if (Object.keys(devDependencies).length > 0) {
 			console.log(`%cdevDependencies`, cssHeading);
+			for (const d of Object.keys(devDependencies)) {
+				console.log(`%c• ${d} : %chttps://stackoverflow.com/search?q=${encodeURIComponent(d)}%20${encodeURIComponent(error.text)}`,
+					cssText,
+					cssUrl
+				);
+			}
 		}
-		for (const d of Object.keys(devDependencies)) {
-			console.log(`%c• ${d} : %chttps://stackoverflow.com/search?q=${encodeURIComponent(d)}%20${encodeURIComponent(error.text)}`,
-				cssText,
-				cssUrl
-			);
-		}
-		console.log(`%cDependencies found at: %c${depQueryUrl}`,
-			cssText,
+		console.log(`%cDependencies file: %c${depQueryUrl}`,
+			cssHeading,
 			cssUrl
 		);
 		console.groupEnd();
@@ -565,8 +565,8 @@ document.addEventListener('ErrorToExtension', function (e) {
 		ecHandler(ecR);
 		soHandler(soR, error); // Full error search
 		soHandler(soGenericR, { "text": genericError }); // Generic error search
-		searchDependencies(error);
 		githubHandler(githubR, error);
+		searchDependencies(error);
 		console.groupEnd();
 	});
 

@@ -63,6 +63,12 @@
 
 	<button onclick="x=undefinedFunctionNoIssue(4)"><code>undefinedFunctionNoIssue()</code></button>
 
+	<!--
+		Github issue: https://github.com/facebook/react/issues/16501
+		SO question: https://stackoverflow.com/questions/47292727/react-uncaught-rangeerror-maximum-call-stack-size-exceeded
+	-->
+	<button onclick="Array.apply(null, new Array(1000000)).map(Math.random);"><code>RangeError</code></button>
+
 	<button onclick='jsonTest()'>
 		<code>JSON.parse()</code>
 	</button>
@@ -104,6 +110,18 @@
 
 
 	</script>
+
+
+	<pre>
+		- Automate actions good devs do already
+			- Including long-shot searches that a coder would only do
+		- Remove code-specific parts of error that would be irrelevant
+			- "myFunnyVariableName"
+		- Search open issues for the project
+			- If some other dev has reported the problem, know it immediately.
+		-
+		- Extend
+	</pre>
 
 	<h2>Link to error docs</h2>
 
