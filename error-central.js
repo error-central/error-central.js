@@ -16,6 +16,7 @@ var devDependencies = {};
 const cssUrl = 'color: blue; font-size: 10px; font-family: Arial,"Helvetica Neue",Helvetica,sans-serif; font-weight: normal;';
 const cssText = 'color: green; font-size: 12px; font-family: Arial,"Helvetica Neue",Helvetica,sans-serif; font-weight: normal;';
 const cssHeading = cssText + 'font-weight:bold;';
+const cssSection = 'color: #fc212e; background-color: #fff0f0';
 
 function getDependencies() {
   // We'd obviously need better smarts to know what branch you're working on,
@@ -409,15 +410,15 @@ const soHandler = (r, error) => {
   else if (soResponse.items.length == 0) {
     console.info(
       `%cNo Stack Overflow results for %c${error.text}`,
-      'color: #fc212e; background-color: #fff0f0',
-      'color: #fc212e; background-color: #fff0f0; font-style: italic'
+      cssSection,
+      cssSection + 'font-style: italic;'
     );
     return;
   }
   // Format SO
   console.groupCollapsed(
     `%c${soResponse.items.length} Stack Overflow results for %c${error.text}`,
-    'color: #fc212e; background-color: #fff0f0',
+    cssSection,
     'color: #fc212e; background-color: #fff0f0; font-style: italic'
   );
   for (const i of soResponse.items.slice(0, maxSearchResults)) {
@@ -450,7 +451,7 @@ const githubHandler = (r, error) => {
     // Nothing found in github, option to create issue
     console.groupCollapsed(
       `%cCreate Gitub issue`,
-      'color: #fc212e; background-color: #fff0f0');
+      cssSection);
     console.info(
       `%chttps://github.com/${repo}/issues/new?title=${encodeURIComponent(error.text)}&body=`,
       cssUrl);
@@ -461,7 +462,7 @@ const githubHandler = (r, error) => {
   console.groupCollapsed(
     `%c${githubResponse.items.length} Github issue` +
     (githubResponse.items.length > 1 ? "s" : ""),
-    'color: #fc212e; background-color: #fff0f0');
+    cssSection);
 
   for (const i of githubResponse.items.slice(0, 10)) {
     console.groupCollapsed(
@@ -489,7 +490,7 @@ const ecHandler = (r) => {
   // Format
   console.groupCollapsed(
     `%c${ecResponse.length} Error Central results`,
-    'color: #fc212e; background-color: #fff0f0');
+    cssSection);
   console.table(ecResponse);
 
   console.groupEnd();
@@ -533,7 +534,7 @@ function searchDependencies(error) {
   if (dependencies) {
     console.groupCollapsed(
       `%cDependencies`,
-      'color: #fc212e; background-color: #fff0f0');
+      cssSection);
     for (const d of Object.keys(dependencies)) {
       console.log(`%c• ${d} : %chttps://stackoverflow.com/search?q=${encodeURIComponent(d)}%20${encodeURIComponent(error.text)}`,
         cssText,
@@ -578,7 +579,7 @@ document.addEventListener('ErrorToExtension', function (e) {
 
     console.groupCollapsed(
       `%c${error.text} 🐛`,
-      'color: #fc212e; background-color: #fff0f0');
+      cssSection);
     if (errorDocUrl) {
       console.info(
         `%cError docs: ${errorDocUrl}`,
