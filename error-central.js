@@ -269,6 +269,9 @@ function genericizeError(errorText) {
       cleanErrorText = (errorRegex.toString().replace(/ ?\(\\S\+\)/g, "").slice(1, -1));
       // console.log(m);
       // console.log(standardError[1]);
+      if (errorText.includes(cleanErrorText)) {
+        cleanErrorText = ""; // If it's the same text, nevermind
+      }
       return {
         "genericError": cleanErrorText, "errorDocUrl": standardError[1]
       };
@@ -506,7 +509,7 @@ const ecHandler = (r) => {
     `%c${ecResponse.length} Error Central results`,
     cssSection);
   svgGraph(
-    [48, 10, 3, 5, 2, 3, 10, 5, 0, 0,
+    [48, 20, 18, 5, 2, 3, 10, 5, 0, 0,
       0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 2, 0],
     "24 Hours");
