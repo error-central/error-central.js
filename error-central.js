@@ -42,18 +42,21 @@ function getDependencies() {
 getDependencies();
 
 
-function svgGraph() {
-  const dataArray = [4, 10, 30, 44, 20, 50, 50, 40, 38, 32, 24, 20, 10, 4, 6];
+function svgGraph(dataArray, title = "") {
   const chartHeight = 50;
   const barWidth = 5;
-  dataSvg = dataArray.map((v, i) => `<g class="bar"><rect height="${v}" x="${i * barWidth}" y="${chartHeight - v}"></rect></g>`);
+  const chartWidth = dataArray.length * barWidth;
+  dataSvg = dataArray.map((v, i) => `<g class="bar"><rect height="${v}" x="${i * barWidth}" y="${chartHeight - v - 1}"></rect></g>`);
   svg = `
-  <svg xmlns="http://www.w3.org/2000/svg" width="100" height="${chartHeight}">
+  <svg xmlns="http://www.w3.org/2000/svg" width="${chartWidth}" height="${chartHeight}">
     <style>
       g { fill: rgb(125, 185, 92)}
       g rect { width: ${barWidth - 1}px; }
+      text { ${cssUrl} ;text-shadow: 1px 1px white;}
     </style>
     ${dataSvg}
+    <line x1="0" y1="${chartHeight - 1}" x2="${chartWidth}" y2="${chartHeight - 1}" style="stroke:gray;stroke-width:1" />
+    <text x="0" y="10" fill="black">${title}</text>
   </svg>
 	`.replace(/\n/g, " ");
   const cssString = `
@@ -63,7 +66,18 @@ function svgGraph() {
   console.log('%c' + ' '.repeat(dataArray.length), cssString);
 }
 
-svgGraph();
+// svgGraph(
+//   [4, 10, 30, 44, 20, 50, 50, 40, 38, 32,
+//     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+//     0, 0, 2, 0],
+//   "24 Hours");
+
+// svgGraph(
+//   [4, 10, 30, 44, 20, 50, 50, 40, 38, 32,
+//     4, 10, 30, 44, 20, 50, 50, 40, 38, 32,
+//     4, 10, 30, 44, 20, 50, 50, 40, 38, 32],
+//   "30 days");
+
 
 function decodeHtmlEntity(text) {
   // via: https://stackoverflow.com/a/29824550/59913
@@ -491,8 +505,18 @@ const ecHandler = (r) => {
   console.groupCollapsed(
     `%c${ecResponse.length} Error Central results`,
     cssSection);
-  console.table(ecResponse);
+  svgGraph(
+    [48, 10, 3, 5, 2, 3, 10, 5, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 2, 0],
+    "24 Hours");
 
+  svgGraph(
+    [4, 10, 30, 44, 20, 50, 50, 40, 38, 32,
+      4, 10, 30, 44, 20, 50, 50, 40, 38, 32,
+      4, 10, 30, 44, 20, 50, 50, 40, 38, 32],
+    "30 days");
+  console.table(ecResponse);
   console.groupEnd();
 };
 
