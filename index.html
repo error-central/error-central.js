@@ -46,16 +46,11 @@
 
 <body>
 
-	<h1>Re-thinking Error messages
+	<h1>Re-thinking Error messages and automating good engineers
 		<!-- : Demo of Error Central for javascript -->
 	</h1>
 
 	<p>The Github repo for this demo is <a href="https://github.com/error-central/error-central.js">here</a>.</p>
-
-	<!-- <p>
-		It's ironic that developers are creating smooth, smart, integrated expereinces for other professions, but developer
-		tools themselves remain warmed-over 70's teletype.
-	</p> -->
 
 	<p>Buttons on this page produce errors. Open the browser console Command-Option-J to view console.</p>
 
@@ -73,7 +68,6 @@
 		<code>JSON.parse()</code>
 	</button>
 
-
 	<button onclick="fa(4)"><code>Stack Function</code></button>
 
 	<form onsubmit="return false;">
@@ -86,56 +80,73 @@
 
 	</form>
 
-	<script>
 
-			// window.onerror = function (message, source, lineno, colno, error) {
-			// console.info(">>>" + message, source, lineno)
-			// }
+	<h2>Background</h2>
+	<p>
+		Its an open secret these days that software development consists of a lot of
+		"run code", "get error", "copy-paste-error to google", "open top Stack Overflow link".
+	</p>
+	<p>
+		<em>Good</em> developers know meta-search skills like removing code-specific
+		function and variable names or recognizing when the results are too general.
+		They know when to add a dependency to the search, or perhaps a bit of the stack trace.
+	</p>
+	<p>
+		<em>Experienced</em> developers know when they are out of options, and will
+		"escalate" to asking co-workers/co-contributers on Slack. "Has anyone seen
+		this error before?"
+	</p>
 
-			// console.log("Hi");
+	<h2>What is this?</h2>
 
-			// console.error("User generated error.");
+	<p>
+		This repot is a "concept car" of what error messages could be. We hope it will spur
+		interest and perhaps this can become a real tool someday. This works for
+		javascript errors in Chrome or Firefox, but these ideas could be extended to
+		anywhere errors appear
+	</p>
 
-			// fart()
-			// setTimeout("fart", 1000);
+	<p>
+		We have also built basic versions of this functionality for directly in
+		the terminal (bash) and as a plugin for VS Code.
+	</p>
 
-
-			// let req = new XMLHttpRequest();
-			// let dependencies;
-			// req.open('GET', 'https://google.com/someapi');
-			// req.onload = () => {
-			// console.log("We wont' get here.")
-			// };
-			// req.send();
-
-
-	</script>
-
-
+	<h2>Fundamentals</h2>
 	<pre>
-		- Automate actions good devs do already
-			- Including long-shot searches that a coder would only do
-		- Remove code-specific parts of error that would be irrelevant
-			- "myFunnyVariableName"
-		- Search open issues for the project
-			- If some other dev has reported the problem, know it immediately.
-		-
-		- Extend
+		- Deeper description of error from official docs
+			- Ideal world there'd be some standard so that any package (e.g. react) could publish error info. But for now we do it by hand.
+		- Where possible, error description in developers native language (esp important for beginnerin developers)
+			- `"0"-prefixed octal literals and octal escape seq. are deprecated` is a tough English sentance to parse.
 	</pre>
 
-	<h2>Link to error docs</h2>
+
+	<h2>Automate actions good devs do already</h2>
+	<pre>
+		- Search google. 80% of the time land on stackoverflow
+			- Including long-shot searches that a coder would only do
+			- Remove code-specific parts of error that would be irrelevant, e.g. "myFunnyVariableName"
+		- Search open issues for the project
+			- If some other dev has reported the problem, know it immediately.
+		- Search dependencies
+			- Use stack trace to infer what dependency might be culpre
+			- Serach open issues for dependencies
+			- Extend serach to issues for dependencies, even going down entire dependency textarea
+		- Search with stack trace
+		- OVERALL: know what a "good" result looks like.
+			- A match with stack trace is better than one just for general type of error
+	</pre>
+
+	<h2>Analytics and sociality</h2>
+	<pre>
+		- Has this error been spiking worldwide in the last 24 hours? (Maybe a dependency had a botched upgrade.)
+		- Basic analytics on error freqency and first occurance. (a la Sentry)
+		- Who of my co-workers/co-contributors has seen this error?
+			- Especially if with same/similar stack trace / branch
+	</pre>
+
+
 
 	<h3>Link to <em>localized</em> error docs</h3>
-
-	<h2>Search Issues</h2>
-
-	<h2>Show analytics</h2>
-
-	<h2>Search Stack Overflow</h2>
-
-	<h2>Search with dependencies</h2>
-
-	<h2>Search with Stack Trace</h2>
 
 	<h2>Machine Learning</h2>
 
