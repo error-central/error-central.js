@@ -501,12 +501,9 @@ const ecHandler = (r) => {
     return;
   }
   let ecResponse = JSON.parse(r);
-  if (ecResponse.length == 0) {
-    return;
-  }
   // Format
   console.groupCollapsed(
-    `%c${ecResponse.length} Error Central results`,
+    `%cLogged ${ecResponse.length} times.`,
     cssSection);
   svgGraph(
     [48, 20, 18, 5, 2, 3, 10, 5, 0, 0,
