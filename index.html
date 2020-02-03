@@ -107,30 +107,35 @@
 	</p>
 
 	<p>
-		We have also built basic versions of this functionality for directly in
-		the terminal (bash) and as a plugin for VS Code.
+		We have also built basic versions of this functionality as a
+		<a href="https://github.com/error-central/error-central/tree/master/vscode-extension">
+			plugin for VS Code</a>, and directly in the terminal (bash).
 	</p>
 
 	<h2>Fundamentals</h2>
 	<pre>
 		- Deeper description of error from official docs
-			- Ideal world there'd be some standard so that any package (e.g. react) could publish error info. But for now we do it by hand.
-		- Where possible, error description in developers native language (esp important for beginnerin developers)
-			- `"0"-prefixed octal literals and octal escape seq. are deprecated` is a tough English sentance to parse.
+			- Ideal world there'd be some standard so that any package (e.g. react)
+			  could publish error info. But for now we do it by hand.
+		- Where possible, error description in developers native language (esp
+		  important for beginnerin developers)
+			- '<em>"0"-prefixed octal literals and octal escape seq. are deprecated</em>' is a
+			  tough English sentance for a non-native speaker.
 	</pre>
-
 
 	<h2>Automate actions good devs do already</h2>
 	<pre>
 		- Search google. 80% of the time land on stackoverflow
 			- Including long-shot searches that a coder would only do
-			- Remove code-specific parts of error that would be irrelevant, e.g. "myFunnyVariableName"
+			- Remove code-specific parts of error that would be irrelevant,
+			  e.g. "myFunnyVariableName"
 		- Search open issues for the project
 			- If some other dev has reported the problem, know it immediately.
 		- Search dependencies
 			- Use stack trace to infer what dependency might be culpre
 			- Serach open issues for dependencies
-			- Extend serach to issues for dependencies, even going down entire dependency textarea
+			- Extend serach to issues for dependencies, even going down entire
+			  dependency textarea
 		- Search with stack trace
 		- OVERALL: know what a "good" result looks like.
 			- A match with stack trace is better than one just for general type of error
@@ -138,17 +143,27 @@
 
 	<h2>Analytics and sociality</h2>
 	<pre>
-		- Has this error been spiking worldwide in the last 24 hours? (Maybe a dependency had a botched upgrade.)
+		- Record errors and context.
+		- Has this error been spiking worldwide in the last 24 hours? (Maybe a
+		  dependency had a botched upgrade.)
 		- Basic analytics on error freqency and first occurance. (a la Sentry)
 		- Who of my co-workers/co-contributors has seen this error?
 			- Especially if with same/similar stack trace / branch
 	</pre>
 
-
-
-	<h3>Link to <em>localized</em> error docs</h3>
-
 	<h2>Machine Learning</h2>
+	<pre>
+		- We can also go <em>beyond</em> automating developer behavior.
+		- Instead of naive text matching search, use the full context of an error
+			when searching for relevant answers, issues, people.
+			- Repo / branch
+			- Stack trace
+			- Dependencies
+			- Input/launch configurations
+		- Use the logging info to record the total context of an error. Then when
+			the error happens later for someone else, they can know who to talk to, or
+			even automatically see what worked to fix it.
+	</pre>
 
 </body>
 
