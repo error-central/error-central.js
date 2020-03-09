@@ -6,6 +6,8 @@ var doSo = true;
 var doSoGeneric = true;
 var doGithub = true;
 var doEc = true;
+var doDependencies = true;
+
 // Github Repo E.g. "error-central/javascript-errors-notifier"
 const repo = window.localStorage.getItem('repo') || "error-central/error-central.js";
 const depQueryUrl = `https://raw.githubusercontent.com/${repo}/master/package.json`;
@@ -555,7 +557,7 @@ function postError(error) {
  * Append known dependencies to error
  */
 function searchDependencies(error) {
-  if (dependencies) {
+  if (doDependencies && dependencies) {
     console.groupCollapsed(
       `%cDependencies`,
       cssSection);
@@ -606,7 +608,7 @@ document.addEventListener('ErrorToExtension', function (e) {
       cssSection);
     if (errorDocUrl) {
       console.info(
-        `%cError docs: ${errorDocUrl}`,
+        `%cDocs: ${errorDocUrl}`,
         'color: green; font-size: 10px');
     }
     ecHandler(ecR);

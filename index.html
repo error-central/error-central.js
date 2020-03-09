@@ -1,7 +1,23 @@
 <html>
 
+<!--
+			Github issue: https://github.com/facebook/react/issues/16501
+			SO question: https://stackoverflow.com/questions/47292727/react-uncaught-rangeerror-maximum-call-stack-size-exceeded
+		-->
+
 <head>
 	<script src="./error-central.js" charset="utf-8"></script>
+
+	<style>
+		textarea {
+			font-family: monospace;
+			width: 500px;
+			height: 50;
+			text-align: left;
+			background-color: black;
+			color: white;
+		}
+	</style>
 
 	<script>
 		function fd(x) {
@@ -17,18 +33,12 @@
 			fb(x);
 		}
 
-		function evalForError() {
+		function formEvalForError(f) {
 			try {
-				eval(document.getElementById('ta').value);
+				eval(f.elements["code"].value);
 			} catch (e) {
 				throw e; // intentionally re-throw (caught by window.onerror)
 			}
-			// 	// console.log(e)
-			// 	var error = new ErrorEvent('Eval event', e);
-			// 	// NOT WORKING. :(
-			// 	window.dispatchEvent(error);
-			// };
-			// return false;
 		}
 
 		function jsonTest() {
@@ -46,22 +56,119 @@
 
 <body>
 
+	<script>
+		doGithub = false;
+		doEc = false;
+		doSoGeneric = false;
+		doDependencies = false;
+		doSo = false;
+	</script>
+
 	<h1>Re-thinking Error messages and automating good engineers
 		<!-- : Demo of Error Central for javascript -->
 	</h1>
 
+
+
+
 	<p>The Github repo for this demo is <a href="https://github.com/error-central/error-central.js">here</a>.</p>
 
+	<h2>Error should link to docs</h2>
+	<p>
+		A small improvement would be to simply connect errors to the web. For now, let's just give the user a link to the
+		official docs for the error. Better yet, link to the docs in the user's language.
+	</p>
+	<form>
+		<textarea name="code">
+undefinedFunction(4)
+			</textarea>
+		<input type="button" onclick="formEvalForError(this.form);" value="Execute" />
+	</form>
+
+
+	<h2>Automatically search Stack Overflow</h2>
+	<p>It's an open secret that the first thing you do when you get an error is to search for it. So why are developers
+		manually selecting text and copy-pasting it into Google? We know that 90% of the time we're going to end up on Stack
+		Overflow, so let's automatically search there.
+	</p>
+	<form>
+		<textarea name="code">
+if (3 > Math.PI {
+	console.log("wait what?");
+}
+		</textarea>
+		<input type="button" onclick="doSo=true; formEvalForError(this.form);" value="Execute" />
+	</form>
+
+	<h2>...But be smart when searching</h2>
+	<p>
+		Any developer knows when to strip out details that are specific to their code. Our system should be smart enough to
+		do
+		this too. Of course, there are times when these little details are important, for example when the error happens in
+		a
+		specific line of a dependency. So the right thing to do is to search for both the exact text and for a "generic"
+		version.
+	</p>
+
+	<form>
+		<textarea name="code">
+undefinedFunction(4)
+			</textarea>
+		<input type="button" onclick="doSo=true; doSoGeneric=true; formEvalForError(this.form);" value="Execute" />
+	</form>
+
+
+	<h2>Search known issues</h2>
+	<p>
+		Sometimes the error you're having is a known issue with your repo. Wouldn't it be great to know that right away? So
+		let's also search the repo issues and wiki!
+	</p>
+
+	<form>
+		<textarea name="code">
+undefinedFunction(4)
+					</textarea>
+		<input type="button" onclick="doSo=true; doSoGeneric=true; doGithub=true; formEvalForError(this.form);"
+			value="Execute" />
+	</form>
+
+	<p>
+		And while we're at it: If there is no open issue for our error, let's provide a quick link to create one!
+	</p>
+
+	<form>
+		<textarea name="code">
+aDifferentUndefinedFunction(4)
+						</textarea>
+		<input type="button" onclick="doSo=true; doSoGeneric=true; doGithub=true; formEvalForError(this.form);"
+			value="Execute" />
+	</form>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	<hr>
+
+	<!--
 	<p>Buttons on this page produce errors. Open the browser console Command-Option-J to view console.</p>
+
+	<button onclick="x=undefinedFunction(4)"><code>undefinedFunction(4)</code></button>
+
 
 	<button onclick="x=undefinedFunction(4)"><code>undefinedFunction(4)</code></button>
 
 	<button onclick="x=undefinedFunctionNoIssue(4)"><code>undefinedFunctionNoIssue()</code></button>
 
-	<!--
-		Github issue: https://github.com/facebook/react/issues/16501
-		SO question: https://stackoverflow.com/questions/47292727/react-uncaught-rangeerror-maximum-call-stack-size-exceeded
-	-->
 	<button onclick="Array.apply(null, new Array(1000000)).map(Math.random);"><code>RangeError</code></button>
 
 	<button onclick='jsonTest()'>
@@ -70,15 +177,11 @@
 
 	<button onclick="fa(4)"><code>Stack Function</code></button>
 
-	<form onsubmit="return false;">
-		<textarea id="ta"
-			style="font-family: monospace; width:500px; height:200px; text-align: left; background-color: black; color:white;">randomFunction();</textarea>
-		<!-- <button onclick="eval(document.getElementById('ta').value); return false;">Execute</button> -->
-		<!-- <button onclick="window['eval'].call(window, document.getElementById('ta').value); return false;">Execute</button> -->
-
-		<button onclick="return evalForError()">Execute</button>
-
+	<form>
+		<textarea name="code">randomFunction();</textarea>
+		<input type="button" onclick="formEvalForError(this.form);" value="Execute" />
 	</form>
+ -->
 
 
 	<h2>Background</h2>
