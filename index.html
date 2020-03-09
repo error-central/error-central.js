@@ -6,6 +6,33 @@
 		-->
 
 <head>
+
+	<!-- Basic Page Needs
+		  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+	<meta charset="utf-8">
+	<title>Error Central: Fresh thinking on error messages</title>
+	<meta name="description" content="">
+	<meta name="author" content="">
+
+	<!-- Mobile Specific Metas
+		  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<!-- FONT
+		  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+	<link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+
+	<!-- CSS
+		  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+	<link rel="stylesheet" href="css/normalize.css">
+	<link rel="stylesheet" href="css/skeleton.css">
+
+	<!-- Favicon
+		  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+	<link rel="icon" type="image/png" href="images/favicon.png">
+
+
+	<!-- This is Error Central -->
 	<script src="./error-central.js" charset="utf-8"></script>
 
 	<style>
@@ -14,8 +41,8 @@
 			width: 500px;
 			height: 50;
 			text-align: left;
-			background-color: black;
-			color: white;
+			background-color: #222;
+			color: yellow;
 		}
 	</style>
 
@@ -56,110 +83,180 @@
 
 <body>
 
-	<script>
-		doGithub = false;
-		doEc = false;
-		doSoGeneric = false;
-		doDependencies = false;
-		doSo = false;
-	</script>
+	<div class="container">
 
-	<h1>Re-thinking Error messages and automating good engineers
-		<!-- : Demo of Error Central for javascript -->
-	</h1>
+		<script>
+			doGithub = false;
+			doEc = false;
+			doSoGeneric = false;
+			doDependencies = false;
+			doSo = false;
+		</script>
+
+		<h1>Re-thinking Error messages and automating good engineers
+			<!-- : Demo of Error Central for javascript -->
+		</h1>
 
 
 
 
-	<p>The Github repo for this demo is <a href="https://github.com/error-central/error-central.js">here</a>.</p>
+		<p>The Github repo for this demo is <a href="https://github.com/error-central/error-central.js">here</a>.</p>
 
-	<h2>Error should link to docs</h2>
-	<p>
-		A small improvement would be to simply connect errors to the web. For now, let's just give the user a link to the
-		official docs for the error. Better yet, link to the docs in the user's language.
-	</p>
-	<form>
-		<textarea name="code">
+
+		<p>
+			This is an interactive demo imaging a better experience for error messages.
+			I hope it will spark discussion, spur some interest, and perhaps lead to some great new tools.
+		</p>
+
+		<p>
+			To view the demo <strong>open the javascript console in your browser</strong> by pressing
+			<code>Option-Command-J</code>. Please experience it in Chrome or Firefox.
+		</p>
+
+
+		<h3>Errors should link to docs</h3>
+		<p>
+			A small improvement would be to simply connect errors to the web. For now, let's just give the user a link to the
+			official docs for the error. Better yet, link to the docs in the user's language.
+		</p>
+		<form>
+			<textarea name="code">
 undefinedFunction(4)
 			</textarea>
-		<input type="button" onclick="formEvalForError(this.form);" value="Execute" />
-	</form>
+			<input type="button" onclick="formEvalForError(this.form);" value="Execute" />
+		</form>
 
 
-	<h2>Automatically search Stack Overflow</h2>
-	<p>It's an open secret that the first thing you do when you get an error is to search for it. So why are developers
-		manually selecting text and copy-pasting it into Google? We know that 90% of the time we're going to end up on Stack
-		Overflow, so let's automatically search there.
-	</p>
-	<form>
-		<textarea name="code">
+		<h3>Automatically search Stack Overflow</h3>
+		<p>It's an open secret that the first thing you do when you get an error is to search for it. So why are developers
+			manually selecting text and copy-pasting it into Google? We know that 90% of the time we're going to end up on
+			Stack
+			Overflow, so let's automatically search there.
+		</p>
+		<form>
+			<textarea name="code">
 if (3 > Math.PI {
 	console.log("wait what?");
 }
 		</textarea>
-		<input type="button" onclick="doSo=true; formEvalForError(this.form);" value="Execute" />
-	</form>
+			<input type="button" onclick="doSo=true; formEvalForError(this.form);" value="Execute" />
+		</form>
 
-	<h2>...But be smart when searching</h2>
-	<p>
-		Any developer knows when to strip out details that are specific to their code. Our system should be smart enough to
-		do
-		this too. Of course, there are times when these little details are important, for example when the error happens in
-		a
-		specific line of a dependency. So the right thing to do is to search for both the exact text and for a "generic"
-		version.
-	</p>
+		<h3>...But be smart when searching</h3>
+		<p>
+			Any developer knows when to strip out details that are specific to their code. Our system should be smart enough
+			to
+			do
+			this too. Of course, there are times when these little details are important, for example when the error happens
+			in
+			a
+			specific line of a dependency. So the right thing to do is to search for both the exact text and for a "generic"
+			version.
+		</p>
 
-	<form>
-		<textarea name="code">
+		<form>
+			<textarea name="code">
 undefinedFunction(4)
 			</textarea>
-		<input type="button" onclick="doSo=true; doSoGeneric=true; formEvalForError(this.form);" value="Execute" />
-	</form>
+			<input type="button" onclick="doSo=true; doSoGeneric=true; formEvalForError(this.form);" value="Execute" />
+		</form>
 
 
-	<h2>Search known issues</h2>
-	<p>
-		Sometimes the error you're having is a known issue with your repo. Wouldn't it be great to know that right away? So
-		let's also search the repo issues and wiki!
-	</p>
 
-	<form>
-		<textarea name="code">
+		<h3>Recognize what a “good” result is</h3>
+
+		<p>Our smarter error handler should also have the smarts to know what a good result is. A "good" result is one that
+			is
+			recent, that contains a substantial match to the query.
+		</p>
+
+		<p><em>Not yet implemented :(</em></p>
+
+
+
+		<h3>Search known issues</h3>
+		<p>
+			Sometimes the error you're having is a known issue with your repo. Shouldn't you be notified of that right away?
+			So let's also search the repo issues and wiki!
+		</p>
+
+		<form>
+			<textarea name="code">
 undefinedFunction(4)
 					</textarea>
-		<input type="button" onclick="doSo=true; doSoGeneric=true; doGithub=true; formEvalForError(this.form);"
-			value="Execute" />
-	</form>
+			<input type="button" onclick="doSo=true; doSoGeneric=true; doGithub=true; formEvalForError(this.form);"
+				value="Execute" />
+		</form>
 
-	<p>
-		And while we're at it: If there is no open issue for our error, let's provide a quick link to create one!
-	</p>
+		<p>
+			And while we're at it: If there is no open issue for our error, let's provide a quick link to create one!
+		</p>
 
-	<form>
-		<textarea name="code">
+		<form>
+			<textarea name="code">
 aDifferentUndefinedFunction(4)
 						</textarea>
-		<input type="button" onclick="doSo=true; doSoGeneric=true; doGithub=true; formEvalForError(this.form);"
-			value="Execute" />
-	</form>
+			<input type="button" onclick="doSo=true; doSoGeneric=true; doGithub=true; formEvalForError(this.form);"
+				value="Execute" />
+		</form>
+
+		<h3>Search with dependencies</h3>
+		<p>
+			Any good developer knows that sometimes you need to "massage" your error search query with details about your
+			environment. The first plan of attack here is to try adding dependency names to your search queries. So if your
+			project
+			uses react, you might add "react" to the query. Rather than try to guess which dependency to add, why not just try
+			all
+			of them?
+		</p>
+
+		<p>
+			Doing this in the demo would exhaust our quota for Stack Overflow, so we'll just link to the searches. (But in a
+			perfect solution, all of these searches would happen in the background and you'd be alerted to any good looking
+			results.)
+		</p>
+
+		<p>
+			Run this code, and then select the "React" search from the dependencies.
+		</p>
+		<form>
+			<textarea name="code">
+Array.apply(null, new Array(1000000)).map(Math.random);
+								</textarea>
+			<input type="button"
+				onclick="doSo=true; doSoGeneric=true; doGithub=true; doDependencies=true; formEvalForError(this.form);"
+				value="Execute" />
+		</form>
+
+
+		<p>
+			All this searching is great, but sometimes the problem isn't in our repo at all, but in one of our dependencies.
+		</p>
+		<p>
+			So let's search issues for our dependencies.
+		</p>
 
 
 
 
 
+		<p>...more to come...</p>
 
 
 
+		<h3>Notes</h3>
+		<p>
+			While this shows off error messagse in a browser, the same concepts apply in any programming envitonment. My
+			friend Gabe and I also built similar functionality as a
+			<a href="https://github.com/error-central/error-central/tree/master/vscode-extension">
+				plugin for VS Code</a>, and directly in the terminal (bash).
+		</p>
 
 
 
+		<hr style="margin-top:600px;">
 
-
-
-	<hr>
-
-	<!--
+		<!--
 	<p>Buttons on this page produce errors. Open the browser console Command-Option-J to view console.</p>
 
 	<button onclick="x=undefinedFunction(4)"><code>undefinedFunction(4)</code></button>
@@ -183,40 +280,40 @@ aDifferentUndefinedFunction(4)
 	</form>
  -->
 
+		<h1>Old outline:</h1>
+		<h3>Background</h3>
+		<p>
+			Its an open secret these days that software development consists of a lot of
+			"run code", "get error", "copy-paste-error to google", "open top Stack Overflow link".
+		</p>
+		<p>
+			<em>Good</em> developers know meta-search skills like removing code-specific
+			function and variable names or recognizing when the results are too general.
+			They know when to add a dependency to the search, or perhaps a bit of the stack trace.
+		</p>
+		<p>
+			<em>Experienced</em> developers know when they are out of options, and will
+			"escalate" to asking co-workers/co-contributers on Slack. "Has anyone seen
+			this error before?"
+		</p>
 
-	<h2>Background</h2>
-	<p>
-		Its an open secret these days that software development consists of a lot of
-		"run code", "get error", "copy-paste-error to google", "open top Stack Overflow link".
-	</p>
-	<p>
-		<em>Good</em> developers know meta-search skills like removing code-specific
-		function and variable names or recognizing when the results are too general.
-		They know when to add a dependency to the search, or perhaps a bit of the stack trace.
-	</p>
-	<p>
-		<em>Experienced</em> developers know when they are out of options, and will
-		"escalate" to asking co-workers/co-contributers on Slack. "Has anyone seen
-		this error before?"
-	</p>
+		<h3>What is this?</h3>
 
-	<h2>What is this?</h2>
+		<p>
+			This repot is a "concept car" of what error messages could be. We hope it will spur
+			interest and perhaps this can become a real tool someday. This works for
+			javascript errors in Chrome or Firefox, but these ideas could be extended to
+			anywhere errors appear
+		</p>
 
-	<p>
-		This repot is a "concept car" of what error messages could be. We hope it will spur
-		interest and perhaps this can become a real tool someday. This works for
-		javascript errors in Chrome or Firefox, but these ideas could be extended to
-		anywhere errors appear
-	</p>
+		<p>
+			We have also built basic versions of this functionality as a
+			<a href="https://github.com/error-central/error-central/tree/master/vscode-extension">
+				plugin for VS Code</a>, and directly in the terminal (bash).
+		</p>
 
-	<p>
-		We have also built basic versions of this functionality as a
-		<a href="https://github.com/error-central/error-central/tree/master/vscode-extension">
-			plugin for VS Code</a>, and directly in the terminal (bash).
-	</p>
-
-	<h2>Fundamentals</h2>
-	<pre>
+		<h3>Fundamentals</h3>
+		<pre>
 		- Deeper description of error from official docs
 			- Ideal world there'd be some standard so that any package (e.g. react)
 			  could publish error info. But for now we do it by hand.
@@ -226,8 +323,8 @@ aDifferentUndefinedFunction(4)
 			  tough English sentance for a non-native speaker.
 	</pre>
 
-	<h2>Automate actions good devs do already</h2>
-	<pre>
+		<h3>Automate actions good devs do already</h3>
+		<pre>
 		- Search google. 80% of the time land on stackoverflow
 			- Including long-shot searches that a coder would only do
 			- Remove code-specific parts of error that would be irrelevant,
@@ -244,8 +341,8 @@ aDifferentUndefinedFunction(4)
 			- A match with stack trace is better than one just for general type of error
 	</pre>
 
-	<h2>Analytics and sociality</h2>
-	<pre>
+		<h3>Analytics and sociality</h3>
+		<pre>
 		- Record errors and context.
 		- Has this error been spiking worldwide in the last 24 hours? (Maybe a
 		  dependency had a botched upgrade.)
@@ -254,8 +351,8 @@ aDifferentUndefinedFunction(4)
 			- Especially if with same/similar stack trace / branch
 	</pre>
 
-	<h2>Machine Learning</h2>
-	<pre>
+		<h3>Machine Learning</h3>
+		<pre>
 		- We can also go <em>beyond</em> automating developer behavior.
 		- Instead of naive text matching search, use the full context of an error
 			when searching for relevant answers, issues, people.
@@ -268,6 +365,7 @@ aDifferentUndefinedFunction(4)
 			even automatically see what worked to fix it.
 	</pre>
 
+	</div>
 </body>
 
 </html>
