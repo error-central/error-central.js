@@ -44,6 +44,37 @@
 			background-color: #222;
 			color: yellow;
 		}
+
+		/* Larger than phablet */
+		@media (min-width: 550px) {
+			h1 {
+				font-size: 4.0rem;
+			}
+
+			h2 {
+				font-size: 3.6rem;
+			}
+
+			h3 {
+				font-size: 2.8rem;
+			}
+
+			h4 {
+				font-size: 2.4rem;
+			}
+
+			h5 {
+				font-size: 2.0rem;
+			}
+
+			h6 {
+				font-size: 1.5rem;
+			}
+		}
+
+		img {
+			margin-bottom: 2rem;
+		}
 	</style>
 
 	<script>
@@ -97,13 +128,13 @@
 			<!-- : Demo of Error Central for javascript -->
 		</h1>
 
-
-
-
-		<p>The Github repo for this demo is <a href="https://github.com/error-central/error-central.js">here</a>.</p>
-
+		<p>
+			<em>The Github repo for this demo is <a href="https://github.com/error-central/error-central.js">here</a>.</em>
+		</p>
 
 		<p>
+			<em>tl;dr error messages need <strong>smarter search</strong>, <strong>social analytics</strong>, and
+				<strong>a move to real machine learning</strong></em>.
 			This is an interactive demo imaging a better experience for error messages.
 			I hope it will spark discussion, spur some interest, and perhaps lead to some great new tools.
 		</p>
@@ -111,13 +142,17 @@
 		<p>
 			To view the demo <strong>open the javascript console in your browser</strong> by pressing
 			<code>Option-Command-J</code>. Please experience it in Chrome or Firefox.
+			(I'm showing this off in the browser so that you can play along in the console, but these same principles could be
+			extended to any IDE or terminal session. At the end of this article I show some exploratory work I've done in
+			those areas.)
 		</p>
 
+		<h2>Smarter Search</h2>
 
-		<h3>Errors should link to docs</h3>
+		<!-- <h3>Errors should link to docs</h3> -->
 		<p>
-			A small improvement would be to simply connect errors to the web. For now, let's just give the user a link to the
-			official docs for the error. Better yet, link to the docs in the user's language.
+			Let's begin with a small improvement to simply connect errors to the web. Just give the
+			user a link to the official docs for the error. Better yet, link to the docs in the user's language.
 		</p>
 		<form>
 			<textarea name="code">
@@ -126,6 +161,7 @@ undefinedFunction(4)
 			<input type="button" onclick="formEvalForError(this.form);" value="Execute" />
 		</form>
 
+		<img src="images/ec-docs.png" />
 
 		<h3>Automatically search Stack Overflow</h3>
 		<p>It's an open secret that the first thing you do when you get an error is to search for it. So why are developers
@@ -142,14 +178,14 @@ if (3 > Math.PI {
 			<input type="button" onclick="doSo=true; formEvalForError(this.form);" value="Execute" />
 		</form>
 
+		<img src="images/ec-search-so.png" />
+
 		<h3>...But be smart when searching</h3>
 		<p>
 			Any developer knows when to strip out details that are specific to their code. Our system should be smart enough
-			to
-			do
+			to do
 			this too. Of course, there are times when these little details are important, for example when the error happens
-			in
-			a
+			in a
 			specific line of a dependency. So the right thing to do is to search for both the exact text and for a "generic"
 			version.
 		</p>
@@ -161,6 +197,7 @@ undefinedFunction(4)
 			<input type="button" onclick="doSo=true; doSoGeneric=true; formEvalForError(this.form);" value="Execute" />
 		</form>
 
+		<img src="images/ec-search-generic-so.png" />
 
 
 		<h3>Recognize what a “good” result is</h3>
@@ -187,6 +224,8 @@ undefinedFunction(4)
 			<input type="button" onclick="doSo=true; doSoGeneric=true; doGithub=true; formEvalForError(this.form);"
 				value="Execute" />
 		</form>
+
+		<img src="images/ec-search-issues.png" />
 
 		<p>
 			And while we're at it: If there is no open issue for our error, let's provide a quick link to create one!
@@ -228,6 +267,7 @@ Array.apply(null, new Array(1000000)).map(Math.random);
 				value="Execute" />
 		</form>
 
+		<img src="images/ec-search-dependencies.png" />
 
 		<p>
 			All this searching is great, but sometimes the problem isn't in our repo at all, but in one of our dependencies.
@@ -238,13 +278,35 @@ Array.apply(null, new Array(1000000)).map(Math.random);
 
 
 
+		<p><em>...not yet implemented...</em></p>
+
+		<h2>Social Analytics</h2>
+
+		<p>All that automatic searching is great, but sometimes the solution doesn't live in a web result</p>
+
+		<p><strong>Who of my co-workers has seen this error lately?</strong> Errors are often very specific to the codebase.
+			Knowledge of “How to fix error X?” often lives only in the head of someone else. So when you see an error, you
+			should instantly see who of co-workers has seen this error lately.
+		</p>
+
+		<p><strong>How often is this error happening?</strong> My engineering team once lost an entire mornign trying to fix
+			a "bug" that turned out to be very subtly caused by an overnight update in an npm package. Little did we know that
+			that literally thousads of other developers aroudn the world were getting the same error that morning! We should
+			have seen immediately that this error message has spiked in the last 24 hours.</p>
+
+		<form>
+			<textarea name="code">
+undefinedFunction(4)
+								</textarea>
+			<input type="button"
+				onclick="doSo=true; doSoGeneric=true; doGithub=true; doDependencies=true; doEc=true; formEvalForError(this.form);"
+				value="Execute" />
+		</form>
+
+		<img src="images/ec-analytics.png" />
 
 
-		<p>...more to come...</p>
-
-
-
-		<h3>Notes</h3>
+		<h2>Closing thoughts</h2>
 		<p>
 			While this shows off error messagse in a browser, the same concepts apply in any programming envitonment. My
 			friend Gabe and I also built similar functionality as a
@@ -280,40 +342,41 @@ Array.apply(null, new Array(1000000)).map(Math.random);
 	</form>
  -->
 
-		<h1>Old outline:</h1>
-		<h3>Background</h3>
-		<p>
-			Its an open secret these days that software development consists of a lot of
-			"run code", "get error", "copy-paste-error to google", "open top Stack Overflow link".
-		</p>
-		<p>
-			<em>Good</em> developers know meta-search skills like removing code-specific
-			function and variable names or recognizing when the results are too general.
-			They know when to add a dependency to the search, or perhaps a bit of the stack trace.
-		</p>
-		<p>
-			<em>Experienced</em> developers know when they are out of options, and will
-			"escalate" to asking co-workers/co-contributers on Slack. "Has anyone seen
-			this error before?"
-		</p>
+		<div style="color: lightgrey">
+			<h1>Old outline:</h1>
+			<h3>Background</h3>
+			<p>
+				Its an open secret these days that software development consists of a lot of
+				"run code", "get error", "copy-paste-error to google", "open top Stack Overflow link".
+			</p>
+			<p>
+				<em>Good</em> developers know meta-search skills like removing code-specific
+				function and variable names or recognizing when the results are too general.
+				They know when to add a dependency to the search, or perhaps a bit of the stack trace.
+			</p>
+			<p>
+				<em>Experienced</em> developers know when they are out of options, and will
+				"escalate" to asking co-workers/co-contributers on Slack. "Has anyone seen
+				this error before?"
+			</p>
 
-		<h3>What is this?</h3>
+			<h3>What is this?</h3>
 
-		<p>
-			This repot is a "concept car" of what error messages could be. We hope it will spur
-			interest and perhaps this can become a real tool someday. This works for
-			javascript errors in Chrome or Firefox, but these ideas could be extended to
-			anywhere errors appear
-		</p>
+			<p>
+				This repot is a "concept car" of what error messages could be. We hope it will spur
+				interest and perhaps this can become a real tool someday. This works for
+				javascript errors in Chrome or Firefox, but these ideas could be extended to
+				anywhere errors appear
+			</p>
 
-		<p>
-			We have also built basic versions of this functionality as a
-			<a href="https://github.com/error-central/error-central/tree/master/vscode-extension">
-				plugin for VS Code</a>, and directly in the terminal (bash).
-		</p>
+			<p>
+				We have also built basic versions of this functionality as a
+				<a href="https://github.com/error-central/error-central/tree/master/vscode-extension">
+					plugin for VS Code</a>, and directly in the terminal (bash).
+			</p>
 
-		<h3>Fundamentals</h3>
-		<pre>
+			<h3>Fundamentals</h3>
+			<pre>
 		- Deeper description of error from official docs
 			- Ideal world there'd be some standard so that any package (e.g. react)
 			  could publish error info. But for now we do it by hand.
@@ -323,8 +386,8 @@ Array.apply(null, new Array(1000000)).map(Math.random);
 			  tough English sentance for a non-native speaker.
 	</pre>
 
-		<h3>Automate actions good devs do already</h3>
-		<pre>
+			<h3>Automate actions good devs do already</h3>
+			<pre>
 		- Search google. 80% of the time land on stackoverflow
 			- Including long-shot searches that a coder would only do
 			- Remove code-specific parts of error that would be irrelevant,
@@ -341,8 +404,8 @@ Array.apply(null, new Array(1000000)).map(Math.random);
 			- A match with stack trace is better than one just for general type of error
 	</pre>
 
-		<h3>Analytics and sociality</h3>
-		<pre>
+			<h3>Analytics and sociality</h3>
+			<pre>
 		- Record errors and context.
 		- Has this error been spiking worldwide in the last 24 hours? (Maybe a
 		  dependency had a botched upgrade.)
@@ -351,8 +414,8 @@ Array.apply(null, new Array(1000000)).map(Math.random);
 			- Especially if with same/similar stack trace / branch
 	</pre>
 
-		<h3>Machine Learning</h3>
-		<pre>
+			<h3>Machine Learning</h3>
+			<pre>
 		- We can also go <em>beyond</em> automating developer behavior.
 		- Instead of naive text matching search, use the full context of an error
 			when searching for relevant answers, issues, people.
@@ -364,8 +427,9 @@ Array.apply(null, new Array(1000000)).map(Math.random);
 			the error happens later for someone else, they can know who to talk to, or
 			even automatically see what worked to fix it.
 	</pre>
-
+		</div>
 	</div>
+
 </body>
 
 </html>
